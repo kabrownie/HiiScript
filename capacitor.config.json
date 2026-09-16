@@ -1,0 +1,6 @@
+{
+  "appId": "com.kabrownie.screen",
+  "appName": "Kabrownie Screen",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}

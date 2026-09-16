@@ -1,0 +1,19 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start Kabrownie Screen",
+      "type": "shell",
+      "command": "npm start",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Serve web preview",
+      "type": "shell",
+      "command": "npm run web",
+      "isBackground": true,
+      "problemMatcher": []
+    }
+  ]
+}

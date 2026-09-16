@@ -1,0 +1,22 @@
+{
+  "name": "kabrownie-screen",
+  "version": "0.1.0",
+  "description": "An open source screenplay writer.",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "web": "npx http-server www -p 8080",
+    "cap:add": "npx cap add android",
+    "cap:sync": "npx cap sync"
+  },
+  "keywords": ["screenplay", "writing", "electron", "capacitor"],
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^38.1.0",
+    "http-server": "^14.1.1"
+  },
+  "dependencies": {
+    "@capacitor/cli": "^7.4.3",
+    "@capacitor/core": "^7.4.3"
+  }
+}
