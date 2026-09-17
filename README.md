@@ -19,6 +19,10 @@ The Electron app stores drafts as JSON files through a secure preload bridge. Th
 
 Use **Front page** to add title-page metadata, and **Page break** to insert a new screenplay page. **Save** and **Open** use JSON draft files in Electron (or browser downloads/file selection on the web); **Export** creates portable Fountain text.
 
+On first launch, Kabrownie Screen opens **The Last Signal**, a clearly labeled superhero starter template. Create a new script or dismiss the notice when you are ready to begin your own screenplay.
+
+The **Library** manages saved character and scene suggestions. Entries can be added, renamed, deleted, or transferred as JSON. Preview pages paginate automatically when screenplay content reaches the letter-page boundary.
+
 ## Build Instructions
 
 ### First-time setup
@@ -72,6 +76,12 @@ adb install android/app/build/outputs/apk/debug/app-debug.apk
 
 ## Development Testing
 
+Run the core smoke tests with:
+
+```bash
+npm test
+```
+
 - Browser: open `www/index.html` directly.
 - Electron: run `npm run dev` or press F5 in VS Code.
 - Android: run `npm run android:open` for live testing in Android Studio.
@@ -84,3 +94,5 @@ Keep `www/index.html` as the single source of truth. Electron reads it on every 
 - `electron/` contains the Electron main process and secure preload bridge.
 - `capacitor.config.json` configures the shared web bundle for native targets.
 - `.vscode/` contains launch and task definitions for local development.
+
+Shared screenplay rules live in `www/js/screenplay-core.js`; accessibility helpers live in `www/js/accessibility.js`. The HTML file still owns the editor controller and markup, but reusable classification and data normalization are now testable outside the browser.

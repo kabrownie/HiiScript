@@ -6,10 +6,10 @@
 <title>Kabrownie Screen</title>
 <style>
 :root{
-  --bg:#140a14; --bg2:#1c0e1b; --panel:#271326; --panel2:#331a31;
-  --line:#4d2a48; --line2:#63325c;
-  --ink:#f8eaf5; --muted:#b98fb0;
-  --accent:#ff2d95; --accent2:#ff7ac0; --accent3:#ffd0ea;
+  --bg:#151518; --bg2:#1d1d21; --panel:#25252a; --panel2:#2b2b31;
+  --line:#414149; --line2:#575760;
+  --ink:#f2eff6; --muted:#aaa5b5;
+  --accent:#b78cff; --accent2:#d5bfff; --accent3:#eee5ff;
   --paper:#fdf8fc; --paperink:#170a16; --papermuted:#7a5a74;
 }
 *{box-sizing:border-box}
@@ -23,9 +23,9 @@ body{
 /* ================= header ================= */
 header{
   display:flex;align-items:center;gap:7px;padding:7px 11px;flex-wrap:wrap;
-  background:linear-gradient(180deg,var(--panel2),var(--panel));
+  background:var(--panel);
   border-bottom:1px solid var(--line);
-  box-shadow:0 2px 14px rgba(255,45,149,.13);
+  box-shadow:0 2px 14px rgba(183,140,255,.09);
   z-index:10;
 }
 .brand{font-weight:900;letter-spacing:.6px;margin-right:4px;white-space:nowrap;
@@ -34,28 +34,31 @@ header{
 .brand span{font-weight:400;font-size:10.5px;letter-spacing:.4px;color:var(--muted);
   -webkit-text-fill-color:var(--muted)}
 input[type=text]{
-  font:inherit;color:var(--ink);background:#2c1529;border:1px solid var(--line);
+  font:inherit;color:var(--ink);background:#2b2b31;border:1px solid var(--line);
   border-radius:7px;padding:5px 10px;outline:none;min-width:150px;flex:0 1 210px;
 }
-input[type=text]:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,45,149,.16)}
+input[type=text]:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(183,140,255,.16)}
 button,select{
-  font:inherit;color:var(--ink);background:#331a31;border:1px solid var(--line);
+  font:inherit;color:var(--ink);background:#2b182e;border:1px solid var(--line);
   border-radius:7px;padding:5px 10px;cursor:pointer;transition:.12s;
 }
 button:hover,select:hover{background:#432041;border-color:var(--line2)}
 button:active{transform:translateY(1px)}
-button.primary{background:linear-gradient(180deg,var(--accent),#d81b78);border-color:#ff5aa8;font-weight:600;color:#fff}
-button.primary:hover{background:linear-gradient(180deg,#ff4aa3,#e01e82)}
+button.primary{background:var(--accent);border-color:var(--accent);font-weight:600;color:#1d1230}
+button.primary:hover{background:var(--accent2);border-color:var(--accent2)}
 .seg{display:flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
 .seg button{border:0;border-radius:0;background:transparent;padding:5px 11px}
-.seg button.active{background:linear-gradient(180deg,var(--accent),#d81b78);color:#fff;font-weight:600}
+.seg button.active{background:var(--accent);color:#1d1230;font-weight:600}
 .spacer{flex:1}
 .status{color:var(--accent2);font-size:11.5px;white-space:nowrap;padding-left:4px;font-weight:600}
+.template-notice{display:none;align-items:center;gap:6px;color:var(--muted);font-size:11px;padding:3px 7px;border:1px solid var(--line);border-radius:6px}
+.template-notice.visible{display:inline-flex}
+.template-notice button{padding:2px 6px;font-size:11px}
 
 /* ================= layout ================= */
 main{flex:1;display:flex;min-height:0;background:var(--bg2)}
 #editorPane{flex:1 1 46%;min-width:0;display:flex;flex-direction:column;border-right:1px solid var(--line);overflow:auto;container-type:inline-size}
-#previewPane{flex:1 1 54%;min-width:0;overflow:auto;background:#100810;padding:22px 16px 70px}
+#previewPane{flex:1 1 54%;min-width:0;overflow:auto;background:#111114;padding:22px 16px 70px}
 #previewPane{container-type:inline-size}
 main[data-layout="editor"] #previewPane{display:none}
 main[data-layout="preview"] #editorPane{display:none}
@@ -66,7 +69,7 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
 #editor{
   width:8.5in;max-width:calc(100% - 32px);margin:22px auto;background:var(--paper);color:var(--paperink);
   border-radius:5px;padding:1in 1in 1in 1.5in;min-height:11in;
-  box-shadow:0 12px 42px rgba(0,0,0,.65), 0 0 0 1px rgba(255,45,149,.12);
+  box-shadow:0 12px 42px rgba(0,0,0,.65), 0 0 0 1px rgba(183,140,255,.12);
   font:12pt/1.06 "Courier New",Courier,"Nimbus Mono PS",monospace;
   caret-color:var(--accent);
   outline:none;
@@ -76,7 +79,7 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
   padding:0;white-space:pre-wrap;word-wrap:break-word;
   min-height:1.06em;border-radius:2px;transition:background .1s;
 }
-.ln.active{background:rgba(255,45,149,.055)}
+.ln.active{background:rgba(183,140,255,.08)}
 .ln[data-type="scene"]{font-weight:700;text-transform:uppercase;margin:1.1em 0 1em}
 .ln[data-type="action"]{margin-bottom:1em}
 .ln[data-type="character"]{margin-left:2.2in;text-transform:uppercase;margin-top:.9em}
@@ -96,7 +99,7 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
 #autoBox{
   position:fixed;z-index:60;display:none;min-width:220px;max-width:340px;
   background:var(--panel2);border:1px solid var(--accent);border-radius:8px;
-  box-shadow:0 12px 34px rgba(0,0,0,.7),0 0 0 3px rgba(255,45,149,.13);
+  box-shadow:0 12px 34px rgba(0,0,0,.7),0 0 0 3px rgba(183,140,255,.13);
   overflow:hidden;padding:3px;
 }
 #autoBox.open{display:block}
@@ -105,16 +108,17 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
   color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 #autoBox .item .hl{color:var(--accent2);font-weight:700}
-#autoBox .item.sel{background:linear-gradient(90deg,var(--accent),#c9186e);color:#fff}
+#autoBox .item.sel{background:var(--accent);color:#1d1230}
 #autoBox .item.sel .hl{color:#ffe3f2}
 #autoBox .hint{padding:4px 10px 5px;font-size:10px;color:var(--muted);border-top:1px solid var(--line);margin-top:3px}
 
 /* ================= preview paper ================= */
 .page{
-  width:min(8.5in,100%);min-height:11in;margin:0 auto 22px;background:var(--paper);color:var(--paperink);
+  width:min(8.5in,100%);height:11in;min-height:11in;margin:0 auto 22px;background:var(--paper);color:var(--paperink);
   padding:1in 1in 1in 1.5in;border-radius:4px;
-  box-shadow:0 12px 42px rgba(0,0,0,.68), 0 0 0 1px rgba(255,45,149,.1);
+  box-shadow:0 12px 42px rgba(0,0,0,.68), 0 0 0 1px rgba(183,140,255,.1);
   font:12pt/1.06 "Courier New",Courier,"Nimbus Mono PS",monospace;
+  overflow:hidden;
 }
 .page p{margin:0}
 .page .scene{text-transform:uppercase;font-weight:700;margin:1.1em 0 1em}
@@ -162,9 +166,7 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
 .modal .box{background:var(--panel);border:1px solid var(--line2);border-radius:14px;
   max-width:680px;width:100%;max-height:84vh;overflow:auto;padding:clamp(16px,4vw,24px) clamp(16px,5vw,28px);
   box-shadow:0 24px 70px rgba(0,0,0,.7),0 0 0 1px rgba(255,45,149,.2)}
-.modal h2{margin:0 0 12px;font-size:16px;
-  background:linear-gradient(90deg,var(--accent),var(--accent2));
-  -webkit-background-clip:text;background-clip:text;color:transparent}
+.modal h2{margin:0 0 12px;font-size:16px;color:var(--accent2)}
 .modal h3{margin:18px 0 6px;font-size:11.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--accent2)}
 .modal code{background:#180c17;padding:1px 6px;border-radius:4px;color:#ffb8dc;font-size:12.5px}
 .modal table{width:100%;border-collapse:collapse;font-size:12.5px}
@@ -173,6 +175,14 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
 .modal p{color:var(--muted);font-size:12.5px}
 .modal .close{margin-top:18px}
 .modal .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.library-box{max-width:860px}
+.library-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.library-list{display:flex;flex-direction:column;gap:5px;max-height:260px;overflow:auto;padding-right:3px}
+.library-entry{display:flex;align-items:center;gap:6px}
+.library-entry input{flex:1;min-width:0;font:inherit;color:var(--ink);background:#2b2b31;border:1px solid var(--line);border-radius:6px;padding:5px 7px}
+.library-entry button{padding:4px 8px}
+.library-actions{justify-content:flex-end}
+@media (max-width:700px){.library-grid{grid-template-columns:1fr}}
 
 /* ================= print ================= */
 @page{size:letter;margin:1in 1in 1in 1.5in}
@@ -182,7 +192,7 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
   main{display:block;background:#fff}
   #previewPane{overflow:visible;background:#fff;padding:0;display:block !important}
   .page{zoom:1 !important}
-  .page{width:auto;min-height:0;margin:0;padding:0;box-shadow:none;font-size:12pt;border-radius:0}
+  .page{width:auto;height:auto;min-height:0;margin:0;padding:0;box-shadow:none;font-size:12pt;border-radius:0;overflow:visible}
   .page .section,.page .synopsis,.page .note{display:none}
   .page .pagebreak{border:0;break-after:page;page-break-after:always}
   .page + .page{break-before:page}
@@ -193,12 +203,15 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
 
 <header>
   <div class="brand">KABROWNIE SCREEN <span>offline</span></div>
+  <span id="templateNotice" class="template-notice">Starter template — edit it or create a new script <button id="dismissTemplate" type="button">Dismiss</button></span>
   <input type="text" id="docTitle" placeholder="Untitled" autocomplete="off" spellcheck="false">
   <select id="docSelect" title="Your scripts"></select>
   <button id="btnNew" title="New script">+ New</button>
+  <button id="btnNewTemplate" title="Create a new script from the starter template">New from template</button>
   <button id="btnDelete" title="Delete this script">✕</button>
   <button id="btnFrontPage" title="Add a screenplay title page">Front page</button>
   <button id="btnPageBreak" title="Insert a new page">Page break</button>
+  <button id="btnLibrary" title="Manage saved characters and scenes">Library</button>
   <div class="spacer"></div>
   <div class="seg" role="group" aria-label="Layout">
     <button data-layout="split" class="active">Split</button>
@@ -219,17 +232,17 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
   <button id="btnPrint" title="Print or save as PDF">PDF</button>
   <button id="btnLaunchers" title="Download Windows & Linux launchers">⤓ Run</button>
   <button id="btnHelp" title="Fountain cheat sheet">?</button>
-  <span class="status" id="status"></span>
+  <span class="status" id="status" role="status" aria-live="polite"></span>
   <input type="file" id="fileInput" accept=".pdf,.fountain,.txt,.spmd,.md,.fdx,.xml" hidden>
   <input type="file" id="draftInput" accept=".json" hidden>
 </header>
 
 <main id="main" data-layout="split">
   <section id="editorPane">
-    <div id="editor" contenteditable="true" spellcheck="false"></div>
+    <div id="editor" contenteditable="true" role="textbox" aria-label="Screenplay editor" aria-multiline="true" spellcheck="false"></div>
   </section>
   <section id="previewPane">
-    <div id="preview"></div>
+    <div id="preview" role="document" aria-label="Screenplay preview"></div>
   </section>
 </main>
 
@@ -288,6 +301,29 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
   </div>
 </div>
 
+<div class="modal" id="libraryModal">
+  <div class="box library-box">
+    <h2>Characters and scenes</h2>
+    <p>These entries power autocomplete and are stored locally with your drafts.</p>
+    <div class="library-grid">
+      <section>
+        <h3>Characters</h3>
+        <div id="characterLibrary" class="library-list"></div>
+        <div class="row"><input id="newCharacter" type="text" placeholder="Add character" autocomplete="off"><button id="addCharacter">Add</button></div>
+      </section>
+      <section>
+        <h3>Scenes</h3>
+        <div id="sceneLibrary" class="library-list"></div>
+        <div class="row"><input id="newScene" type="text" placeholder="INT. LOCATION - DAY" autocomplete="off"><button id="addScene">Add</button></div>
+      </section>
+    </div>
+    <div class="row library-actions"><button id="exportLibrary">Export library</button><button id="importLibrary">Import library</button><button class="close primary" id="closeLibrary">Done</button></div>
+    <input id="libraryFile" type="file" accept=".json" hidden>
+  </div>
+</div>
+
+<script src="js/screenplay-core.js"></script>
+<script src="js/accessibility.js"></script>
 <script>
 "use strict";
 /* ============================================================
@@ -302,6 +338,7 @@ const docSelect   = $("#docSelect");
 const statusEl    = $("#status");
 const mainEl      = $("#main");
 const autoBox     = $("#autoBox");
+const templateNotice = $("#templateNotice");
 
 /* ================= utilities ================= */
 
@@ -322,41 +359,81 @@ function download(name, text, mime){
 
 const SCENE_RE = /^(INT|EXT|EST|INT\.?\/EXT|EXT\.?\/INT|I\/E)[.\s]/i;
 const TRANS_START_RE = /^(FADE\s*(IN|OUT|TO)?|CUT\s+TO|SMASH\s+CUT|MATCH\s+CUT|JUMP\s+CUT|DISSOLVE\s+TO|WIPE\s+TO|IRIS\s+(IN|OUT)|INTERCUT|BACK\s+TO|TIME\s+CUT|HARD\s+CUT)/i;
-
-function detectType(text){
-  const t = String(text).trim();
-  if(!t) return "blank";
-  if(/^={3,}$/.test(t)) return "pagebreak";
-  if(/^#{1,6}\s/.test(t)) return "section";
-  if(/^=/.test(t)) return "synopsis";
-  if(t.startsWith("[[")) return "note";
-  if(t.startsWith("!")) return "action";
-  if(t.startsWith(">")) return t.endsWith("<") ? "centered" : "transition";
-  if(t.startsWith(".") && !t.startsWith("..")) return "scene";
-  if(t.startsWith("@")) return "character";
-  if(SCENE_RE.test(t)) return "scene";
-  if(/^\(.*\)$/.test(t) && t.length < 90) return "paren";
-
-  const isCaps = t === t.toUpperCase() && /[A-Z]/.test(t) && !/[a-z]/.test(t);
-  if(isCaps && t.length <= 48){
-    if(TRANS_START_RE.test(t)) return "transition";
-    if(/TO:\s*$/.test(t)) return "transition";
-    if(t.endsWith(":")) return "transition";
-    if(t.length >= 2 && !/\s$/.test(text)) return "character";
-    return "character";
-  }
-  if(TRANS_START_RE.test(t) && t.length <= 48) return "transition";
-  if(/TO:\s*$/.test(t) && t.length <= 48) return "transition";
-  return "action";
-}
+const detectType = ScreenplayCore.detectType;
 
 /* ================= store ================= */
 
 const KEY = "kabrownie.screen.v1";
 let saveTimer = null;
+const STARTER_TEMPLATE = `Title: The Last Signal
+Credit: Written by
+Author: Kabrownie Screen Template
+Draft date: 2026-09-17
 
-function makeDoc(title){
-  return { id: uid(), title: title || "Untitled", text: "", updated: Date.now() };
+INT. CITY ROOFTOP - NIGHT
+
+Rain needles the skyline. A tiny red warning light blinks on a forgotten radio tower.
+
+NOVA, 24, wearing a battered silver helmet, climbs over the ledge. Her cape is stitched from an old emergency blanket.
+
+                         NOVA
+             Please tell me that is not the
+             city's entire power grid.
+
+The radio crackles.
+
+                         RADIO VOICE
+             Ninety seconds until total blackout.
+
+Nova looks down. Ten thousand windows glow beneath her.
+
+                         NOVA
+                 (to herself)
+             Then I have ninety seconds.
+
+A SHADOW leaps across the neighboring roof.
+
+                         VEX
+             You always did make dramatic entrances.
+
+VEX, a masked thief with a stolen battery pack, steps into the rain.
+
+                         NOVA
+             Give me the battery, Vex.
+
+                         VEX
+             And let the city go dark? I would
+             never miss an opportunity like that.
+
+Vex hurls a bolt of blue energy. Nova catches it in her gloved hand. The glove sparks.
+
+                         NOVA
+             You changed the frequency.
+
+                         VEX
+             I learned from watching you.
+
+Nova slams the energy into the radio tower. The warning light turns green.
+
+                         RADIO VOICE
+             Grid restored.
+
+Below, the city comes alive again.
+
+                         VEX
+             So... dinner?
+
+                         NOVA
+             You are buying.
+
+They disappear into the rain as the sun rises behind the towers.
+
+FADE OUT.
+
+> THE END <`;
+
+function makeDoc(title, text){
+  return { id: uid(), title: title || "Untitled", text: text || "", updated: Date.now() };
 }
 
 function loadStore(){
@@ -365,14 +442,12 @@ function loadStore(){
     if(raw){
       const s = JSON.parse(raw);
       if(s && Array.isArray(s.docs) && s.docs.length){
-        if(!Array.isArray(s.characters)) s.characters = [];
-        if(!Array.isArray(s.scenes)) s.scenes = [];
-        return s;
+        return ScreenplayCore.normalizeLibrary(s);
       }
     }
   }catch(e){ /* corrupted -> start fresh */ }
-  const d = makeDoc("My Screenplay");
-  return { docs: [d], active: d.id, characters: [], scenes: [] };
+  const d = makeDoc("The Last Signal — Template", STARTER_TEMPLATE);
+  return { docs: [d], active: d.id, characters: ["NOVA", "VEX", "RADIO VOICE"], scenes: ["INT. CITY ROOFTOP - NIGHT"], firstRun: true };
 }
 
 let store = loadStore();
@@ -402,7 +477,7 @@ function rememberCharacters(){
     const next = line.nextElementSibling;
     const nextType = next && next.dataset.type;
     const valid = line.dataset.type === "character" &&
-      /^[A-Z][A-Z0-9 .'-]{1,47}$/.test(name) &&
+      ScreenplayCore.isCharacterName(name) &&
       (line.dataset.force === "character" || nextType === "dialog" || nextType === "paren");
     if(valid && !known.has(name)){
       known.add(name);
@@ -420,8 +495,7 @@ function rememberScenes(){
   let changed = false;
   getLines().forEach(line => {
     const scene = line.textContent.trim();
-    const valid = line.dataset.type === "scene" &&
-      /^(INT|EXT|EST|INT\.?\/EXT|EXT\.?\/INT|I\/E)\.?\s+.+\s+-\s+\S+/i.test(scene);
+    const valid = line.dataset.type === "scene" && ScreenplayCore.isSceneHeading(scene);
     if(valid && !known.has(scene)){
       known.add(scene);
       store.scenes.push(scene);
@@ -634,6 +708,25 @@ function render(){
   let html = titlePage ? `<div class="page">${renderTitlePage(titlePage)}</div>` : "";
   html += pages.map(page => `<div class="page">${page.map(renderBlock).join("")}</div>`).join("");
   preview.innerHTML = html || `<div class="page"><p class="action" style="color:#c9a">Nothing yet — start typing.</p></div>`;
+  requestAnimationFrame(paginatePreview);
+}
+
+function paginatePreview(){
+  const pages = Array.from(preview.children).filter(page => page.classList.contains("page"));
+  for(let index = 0; index < pages.length; index++){
+    const page = pages[index];
+    if(page.querySelector(".titlepage")) continue;
+    while(page.scrollHeight > page.clientHeight + 1 && page.children.length > 1){
+      let next = pages[index + 1];
+      if(!next){
+        next = document.createElement("div");
+        next.className = "page";
+        page.parentNode.insertBefore(next, page.nextSibling);
+        pages.splice(index + 1, 0, next);
+      }
+      next.prepend(page.lastElementChild);
+    }
+  }
 }
 
 function scheduleSave(){
@@ -873,7 +966,7 @@ function renderTitlePage(lines){
 function renderBlock(b){
   switch(b.type){
     case "scene":      return `<p class="scene">${inline(b.text)}</p>`;
-    case "action":     return `<p class="action">${inline(b.text)}</p>`;
+    case "action":     return b.text.split("\n").map(line => `<p class="action">${inline(line)}</p>`).join("");
     case "transition": return `<p class="transition">${inline(b.text)}</p>`;
     case "centered":   return `<p class="centered">${inline(b.text)}</p>`;
     case "section":    return `<p class="section">${inline(b.text)}</p>`;
@@ -1616,6 +1709,98 @@ function setPageZoom(value){
 pageZoomSelect.addEventListener("change", () => setPageZoom(pageZoomSelect.value));
 setPageZoom(localStorage.getItem("kabrownie.screen.zoom") || 1);
 
+function updateTemplateNotice(){
+  templateNotice.classList.toggle("visible", store.firstRun === true);
+}
+
+$("#dismissTemplate").addEventListener("click", () => {
+  store.firstRun = false;
+  persist();
+  updateTemplateNotice();
+});
+
+function libraryItems(kind){
+  if(!Array.isArray(store[kind])) store[kind] = [];
+  return store[kind];
+}
+
+function renderLibrary(){
+  for(const [kind, id] of [["characters", "characterLibrary"], ["scenes", "sceneLibrary"]]){
+    const list = $("#" + id);
+    list.replaceChildren();
+    libraryItems(kind).forEach((value, index) => {
+      const row = document.createElement("div");
+      row.className = "library-entry";
+      const input = document.createElement("input");
+      input.value = value;
+      input.setAttribute("aria-label", `${kind.slice(0,-1)} ${index + 1}`);
+      input.addEventListener("change", () => {
+        const next = input.value.trim();
+        if(!next) return renderLibrary();
+        store[kind][index] = kind === "characters" ? next.toUpperCase() : next.toUpperCase();
+        store[kind] = Array.from(new Set(store[kind])).sort((a,b) => a.localeCompare(b));
+        persist(); renderLibrary();
+      });
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.textContent = "Delete";
+      remove.addEventListener("click", () => {
+        store[kind].splice(index, 1);
+        persist(); renderLibrary();
+      });
+      row.append(input, remove);
+      list.append(row);
+    });
+  }
+}
+
+function addLibraryItem(kind, inputId){
+  const input = $(inputId);
+  const value = input.value.trim();
+  if(!value) return;
+  if(!Array.isArray(store[kind])) store[kind] = [];
+  store[kind].push(kind === "characters" ? value.toUpperCase() : value.toUpperCase());
+  store[kind] = Array.from(new Set(store[kind])).sort((a,b) => a.localeCompare(b));
+  input.value = "";
+  persist(); renderLibrary();
+}
+
+function openLibrary(){
+  renderLibrary();
+  $("#libraryModal").classList.add("open");
+}
+
+$("#btnLibrary").addEventListener("click", openLibrary);
+$("#closeLibrary").addEventListener("click", () => $("#libraryModal").classList.remove("open"));
+$("#libraryModal").addEventListener("click", e => {
+  if(e.target.id === "libraryModal") e.currentTarget.classList.remove("open");
+});
+$("#addCharacter").addEventListener("click", () => addLibraryItem("characters", "#newCharacter"));
+$("#addScene").addEventListener("click", () => addLibraryItem("scenes", "#newScene"));
+$("#exportLibrary").addEventListener("click", () => {
+  download("kabrownie-library.json", JSON.stringify({version:1, characters:libraryItems("characters"), scenes:libraryItems("scenes")}, null, 2), "application/json;charset=utf-8");
+});
+$("#importLibrary").addEventListener("click", () => $("#libraryFile").click());
+$("#libraryFile").addEventListener("change", e => {
+  const file = e.target.files && e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const imported = JSON.parse(String(reader.result || ""));
+      for(const kind of ["characters", "scenes"]){
+        const values = Array.isArray(imported[kind]) ? imported[kind] : [];
+        store[kind] = Array.from(new Set([...libraryItems(kind), ...values]
+          .filter(value => typeof value === "string" && value.trim())
+          .map(value => value.trim().toUpperCase()))).sort((a,b) => a.localeCompare(b));
+      }
+      persist(); renderLibrary(); setStatus("Library imported");
+    }catch(err){ setStatus("Invalid library file"); }
+  };
+  reader.readAsText(file);
+  e.target.value = "";
+});
+
 titleInput.addEventListener("input", () => {
   const d = activeDoc();
   if(d){ d.title = titleInput.value.trim() || "Untitled"; }
@@ -1636,6 +1821,8 @@ docSelect.addEventListener("change", () => {
 
 $("#btnNew").addEventListener("click", () => {
   flush();
+  store.firstRun = false;
+  updateTemplateNotice();
   const d = makeDoc("Untitled");
   store.docs.push(d);
   store.active = d.id;
@@ -1643,6 +1830,22 @@ $("#btnNew").addEventListener("click", () => {
   loadIntoEditor("");
   persist(); refreshDocList(); render();
   titleInput.focus(); titleInput.select();
+});
+
+$("#btnNewTemplate").addEventListener("click", () => {
+  flush();
+  store.firstRun = false;
+  updateTemplateNotice();
+  const d = makeDoc("The Last Signal — Template", STARTER_TEMPLATE);
+  store.docs.push(d);
+  store.active = d.id;
+  store.characters = Array.from(new Set([...(store.characters || []), "NOVA", "VEX", "RADIO VOICE"])).sort((a,b) => a.localeCompare(b));
+  store.scenes = Array.from(new Set([...(store.scenes || []), "INT. CITY ROOFTOP - NIGHT"])).sort((a,b) => a.localeCompare(b));
+  titleInput.value = d.title;
+  loadIntoEditor(d.text);
+  persist(); refreshDocList(); render(); highlightActive();
+  setStatus("New script created from template");
+  editorEl.focus();
 });
 
 $("#btnDelete").addEventListener("click", () => {
@@ -1759,6 +1962,8 @@ window.addEventListener("beforeunload", flush);
   loadIntoEditor(d.text);
   refreshDocList();
   render();
+  persist();
+  updateTemplateNotice();
   highlightActive();
   editorEl.focus();
   const first = getLines()[0];

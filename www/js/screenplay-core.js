@@ -1,0 +1,54 @@
+"use strict";
+
+(function(){
+  function cleanList(values, uppercase){
+    return Array.from(new Set((Array.isArray(values) ? values : [])
+      .filter(value => typeof value === "string")
+      .map(value => value.trim())
+      .filter(Boolean)
+      .map(value => uppercase ? value.toUpperCase() : value)))
+      .sort((a, b) => a.localeCompare(b));
+  }
+
+  function normalizeLibrary(store){
+    return {
+      ...store,
+      characters: cleanList(store && store.characters, true),
+      scenes: cleanList(store && store.scenes, true)
+    };
+  }
+
+  function isCharacterName(value){
+    return /^[A-Z][A-Z0-9 .'-]{1,47}$/.test(String(value || "").trim());
+  }
+
+  function isSceneHeading(value){
+    return /^(INT|EXT|EST|INT\.?\/EXT|EXT\.?\/INT|I\/E)\.?\s+.+\s+-\s+\S+/i.test(String(value || "").trim());
+  }
+  
+  function detectType(text){
+    const t = String(text || "").trim();
+    if(!t) return "blank";
+    if(/^={3,}$/.test(t)) return "pagebreak";
+    if(/^#{1,6}\s/.test(t)) return "section";
+    if(/^=/.test(t)) return "synopsis";
+    if(t.startsWith("[[")) return "note";
+    if(t.startsWith("!")) return "action";
+    if(t.startsWith(">")) return t.endsWith("<") ? "centered" : "transition";
+    if(t.startsWith(".") && !t.startsWith("..")) return "scene";
+    if(t.startsWith("@")) return "character";
+    if(isSceneHeading(t) || /^(INT|EXT|EST|INT\.?\/EXT|EXT\.?\/INT|I\/E)[.\s]/i.test(t)) return "scene";
+    if(/^\(.*\)$/.test(t) && t.length < 90) return "paren";
+    const isCaps = t === t.toUpperCase() && /[A-Z]/.test(t) && !/[a-z]/.test(t);
+    if(isCaps && t.length <= 48){
+      if(/^(FADE\s*(IN|OUT|TO)?|CUT\s+TO|SMASH\s+CUT|MATCH\s+CUT|JUMP\s+CUT|DISSOLVE\s+TO|WIPE\s+TO|IRIS\s+(IN|OUT)|INTERCUT|BACK\s+TO|TIME\s+CUT|HARD\s+CUT)/i.test(t) || /TO:\s*$/.test(t) || t.endsWith(":")) return "transition";
+      return "character";
+    }
+    if(/^(FADE\s*(IN|OUT|TO)?|CUT\s+TO|SMASH\s+CUT|MATCH\s+CUT|JUMP\s+CUT|DISSOLVE\s+TO|WIPE\s+TO|IRIS\s+(IN|OUT)|INTERCUT|BACK\s+TO|TIME\s+CUT|HARD\s+CUT)/i.test(t) || /TO:\s*$/.test(t)) return "transition";
+    return "action";
+  }
+
+  const api = { cleanList, normalizeLibrary, isCharacterName, isSceneHeading, detectType };
+  if(typeof window !== "undefined") window.ScreenplayCore = api;
+  if(typeof module !== "undefined" && module.exports) module.exports = api;
+})();
