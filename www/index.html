@@ -182,6 +182,8 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
 .library-entry input{flex:1;min-width:0;font:inherit;color:var(--ink);background:#2b2b31;border:1px solid var(--line);border-radius:6px;padding:5px 7px}
 .library-entry button{padding:4px 8px}
 .library-actions{justify-content:flex-end}
+.about-box{max-width:680px}
+.about-box a{color:var(--accent2);font-weight:600}
 @media (max-width:700px){.library-grid{grid-template-columns:1fr}}
 
 /* ================= print ================= */
@@ -232,6 +234,7 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
   <button id="btnPrint" title="Print or save as PDF">PDF</button>
   <button id="btnLaunchers" title="Download Windows & Linux launchers">⤓ Run</button>
   <button id="btnHelp" title="Fountain cheat sheet">?</button>
+  <button id="btnAbout" title="About Kabrownie Screen">About</button>
   <span class="status" id="status" role="status" aria-live="polite"></span>
   <input type="file" id="fileInput" accept=".pdf,.fountain,.txt,.spmd,.md,.fdx,.xml" hidden>
   <input type="file" id="draftInput" accept=".json" hidden>
@@ -319,6 +322,26 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
     </div>
     <div class="row library-actions"><button id="exportLibrary">Export library</button><button id="importLibrary">Import library</button><button class="close primary" id="closeLibrary">Done</button></div>
     <input id="libraryFile" type="file" accept=".json" hidden>
+  </div>
+</div>
+
+<div class="modal" id="aboutModal">
+  <div class="box about-box">
+    <h2>Kabrownie Screen</h2>
+    <p><strong>Created by <a href="https://kabrownie.digital" target="_blank" rel="noreferrer">Kabrownie Digital</a>.</strong></p>
+    <p>Kabrownie Screen is an offline-first screenplay writer for Fountain scripts. It is designed to keep writing, drafts, and exports under the writer's control.</p>
+
+    <h3>Privacy policy</h3>
+    <p><strong>Your scripts stay on your device.</strong> The app stores drafts, settings, characters, and scene suggestions in local browser storage. Draft files are written only when you choose <b>Save</b>, and only to the location you select.</p>
+    <p>Kabrownie Screen does not include accounts, advertising, analytics, tracking pixels, or background uploads. The app does not sell or share screenplay content.</p>
+    <p>PDF import may load the open-source PDF.js library from a public CDN the first time it is used. The PDF is processed in the app; no screenplay upload service is used. For fully offline use, import Fountain, text, or Final Draft files instead.</p>
+
+    <h3>Open source</h3>
+    <p>The project is open source and may be inspected, modified, and self-hosted according to its license. Exported Fountain files remain plain text and portable.</p>
+
+    <h3>Contact</h3>
+    <p>Website: <a href="https://kabrownie.digital" target="_blank" rel="noreferrer">kabrownie.digital</a></p>
+    <button class="close primary" id="closeAbout">Close</button>
   </div>
 </div>
 
@@ -1940,9 +1963,16 @@ $("#btnLaunchers").addEventListener("click", downloadLaunchers);
 $("#btnHelp").addEventListener("click", () => $("#modal").classList.add("open"));
 $("#btnCloseModal").addEventListener("click", () => $("#modal").classList.remove("open"));
 $("#modal").addEventListener("click", (e) => { if(e.target.id === "modal") $("#modal").classList.remove("open"); });
+$("#btnAbout").addEventListener("click", () => $("#aboutModal").classList.add("open"));
+$("#closeAbout").addEventListener("click", () => $("#aboutModal").classList.remove("open"));
+$("#aboutModal").addEventListener("click", (e) => { if(e.target.id === "aboutModal") $("#aboutModal").classList.remove("open"); });
 
 document.addEventListener("keydown", (e) => {
-  if(e.key === "Escape"){ $("#modal").classList.remove("open"); hideAuto(); }
+  if(e.key === "Escape"){
+    $("#modal").classList.remove("open");
+    $("#aboutModal").classList.remove("open");
+    hideAuto();
+  }
 });
 
 window.addEventListener("resize", () => { if(autoBox.classList.contains("open")) positionAuto(); });

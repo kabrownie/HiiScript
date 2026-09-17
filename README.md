@@ -2,6 +2,14 @@
 
 Kabrownie Screen is an open source screenplay writer built as a small Electron and Capacitor-ready app.
 
+Created by [Kabrownie Digital](https://kabrownie.digital).
+
+## Privacy
+
+Kabrownie Screen is offline-first. Scripts, settings, characters, and scene suggestions are stored locally on the user's device. The app has no accounts, advertising, analytics, tracking pixels, or background screenplay uploads. Draft files are written only when the user chooses **Save**.
+
+PDF import may download the open-source PDF.js library from a public CDN the first time it is used. The PDF is processed locally in the app; no screenplay upload service is used.
+
 ## Run locally
 
 ```bash
