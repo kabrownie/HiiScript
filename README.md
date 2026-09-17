@@ -33,6 +33,18 @@ The **Library** manages saved character and scene suggestions. Entries can be ad
 
 ## Build Instructions
 
+## Download The First Release
+
+Choose the file for your computer from the `dist/` folder:
+
+- **Windows:** `Kabrownie Screen 1.0.0.exe` is the portable app. Double-click it; no installation is required.
+- **Linux, easiest:** `Kabrownie Screen-1.0.0.AppImage`. Download it, right-click **Properties > Permissions**, allow it to run as a program, then double-click it.
+- **Ubuntu/Debian:** `kabrownie-screen_1.0.0_amd64.deb`. Double-click it and choose **Install**.
+
+These first-release builds are unsigned, so Windows or Linux may show a security warning. Confirm that the file came from the official Kabrownie Screen release page before opening it. `dist/SHA256SUMS.txt` contains verification checksums.
+
+The app runs offline after installation. Start with the included template, choose **+ New** for a blank script, or choose **New from template** for another copy of the superhero example.
+
 ### First-time setup
 
 ```bash
