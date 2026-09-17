@@ -54,7 +54,8 @@
         "AppImage",
         "deb"
       ],
-      "category": "Office"
+      "category": "Office",
+      "artifactName": "${name}-${version}-${arch}.${ext}"
     },
     "win": {
       "target": [
@@ -63,8 +64,12 @@
       ]
     },
     "nsis": {
+      "artifactName": "${productName}-${version}-setup-${arch}.${ext}",
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
+    },
+    "portable": {
+      "artifactName": "${productName}-${version}-portable-${arch}.${ext}"
     }
   }
 }

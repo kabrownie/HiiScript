@@ -43,9 +43,9 @@ For the newest installers, use the [latest GitHub Release](https://github.com/ka
 
 Choose the file for your computer from the `dist/` folder:
 
-- **Windows:** `Kabrownie Screen 1.0.0.exe` is the portable app. Double-click it; no installation is required.
-- **Linux, easiest:** `Kabrownie Screen-1.0.0.AppImage`. Download it, right-click **Properties > Permissions**, allow it to run as a program, then double-click it.
-- **Ubuntu/Debian:** `kabrownie-screen_1.0.0_amd64.deb`. Double-click it and choose **Install**.
+- **Windows:** `Kabrownie Screen-1.0.0-portable-x64.exe` is the portable app. Double-click it; no installation is required. The `-setup-x64.exe` file is the installable version.
+- **Linux, easiest:** `kabrownie-screen-1.0.0-x86_64.AppImage`. Download it, right-click **Properties > Permissions**, allow it to run as a program, then double-click it.
+- **Ubuntu/Debian:** `kabrownie-screen-1.0.0-amd64.deb`. Double-click it and choose **Install**.
 
 These first-release builds are unsigned, so Windows or Linux may show a security warning. Confirm that the file came from the official Kabrownie Screen release page before opening it. `dist/SHA256SUMS.txt` contains verification checksums.
 
@@ -65,8 +65,8 @@ npm run build:linux
 
 Builds are written to `dist/`:
 
-- `Kabrownie Screen-1.0.0.AppImage` runs without installation.
-- `kabrownie-screen_1.0.0_amd64.deb` installs with `sudo dpkg -i`.
+- `kabrownie-screen-1.0.0-x86_64.AppImage` runs without installation.
+- `kabrownie-screen-1.0.0-amd64.deb` installs with `sudo dpkg -i`.
 
 ### Windows desktop app
 
@@ -75,6 +75,8 @@ npm run build:win
 ```
 
 This creates an NSIS installer and a portable executable in `dist/`. Electron Builder supports cross-compiling between Linux and Windows. macOS targets require macOS.
+
+Windows Defender may identify an unsigned build as an unknown publisher. Removing that warning requires a code-signing certificate and a signed release build; the build script does not claim to sign artifacts.
 
 ### Android APK
 
