@@ -4,6 +4,10 @@ Kabrownie Screen is an open source screenplay writer built as a small Electron a
 
 Created by [Kabrownie Digital](https://kabrownie.digital).
 
+**Project page:** [kabrownie.github.io/Kabrownie-Screen](https://kabrownie.github.io/Kabrownie-Screen)
+
+**Download the latest release:** [GitHub Releases](https://github.com/kabrownie/Kabrownie-Screen/releases/latest)
+
 ## Privacy
 
 Kabrownie Screen is offline-first. Scripts, settings, characters, and scene suggestions are stored locally on the user's device. The app has no accounts, advertising, analytics, tracking pixels, or background screenplay uploads. Draft files are written only when the user chooses **Save**.
@@ -34,6 +38,8 @@ The **Library** manages saved character and scene suggestions. Entries can be ad
 ## Build Instructions
 
 ## Download The First Release
+
+For the newest installers, use the [latest GitHub Release](https://github.com/kabrownie/Kabrownie-Screen/releases/latest).
 
 Choose the file for your computer from the `dist/` folder:
 
