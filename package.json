@@ -1,22 +1,69 @@
 {
   "name": "kabrownie-screen",
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "productName": "Kabrownie Screen",
   "description": "An open source screenplay writer.",
+  "author": {
+    "name": "Kabrownie Screen",
+    "email": "maintainers@kabrownie-screen.invalid"
+  },
   "main": "electron/main.js",
   "scripts": {
     "start": "electron .",
+    "dev": "electron . --enable-devtools",
     "web": "npx http-server www -p 8080",
-    "cap:add": "npx cap add android",
-    "cap:sync": "npx cap sync"
+    "build:linux": "electron-builder --linux AppImage deb",
+    "build:win": "electron-builder --win nsis portable",
+    "android:add": "npx cap add android",
+    "android:sync": "npx cap sync android",
+    "android:open": "npx cap open android",
+    "android:build": "npm run android:sync && cd android && ./gradlew assembleDebug"
   },
-  "keywords": ["screenplay", "writing", "electron", "capacitor"],
+  "keywords": [
+    "screenplay",
+    "writing",
+    "electron",
+    "capacitor"
+  ],
   "license": "MIT",
   "devDependencies": {
     "electron": "^38.1.0",
+    "electron-builder": "^25.1.8",
     "http-server": "^14.1.1"
   },
   "dependencies": {
+    "@capacitor/android": "^7.4.3",
     "@capacitor/cli": "^7.4.3",
     "@capacitor/core": "^7.4.3"
+  },
+  "build": {
+    "appId": "com.kabrownie.screen",
+    "productName": "Kabrownie Screen",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "electron/**/*",
+      "www/**/*",
+      "capacitor.config.json",
+      "package.json"
+    ],
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Office"
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   }
 }
