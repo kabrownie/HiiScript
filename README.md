@@ -14,9 +14,9 @@ Support continued development: [Sponsor Hiiscript on GitHub](https://github.com/
 
 **Release page:** [GitHub Releases](https://github.com/kabrownie/Hiiscript/releases/latest)
 
-## Release 1.0.9
+## Release 1.0.10
 
-The 1.0.9 release is the latest production packaging pass for desktop and Android builds. It targets the same offline screenplay workflow, with the release pipeline configured for Linux, Windows, and Android artifact generation.
+The 1.0.10 release is the latest production packaging pass for desktop and Android builds. It targets the same offline screenplay workflow, with the release pipeline configured for Linux, Windows, and Android artifact generation.
 
 ## Privacy
 
