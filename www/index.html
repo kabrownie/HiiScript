@@ -40,6 +40,10 @@ header{
 .toolbar-menu summary::-webkit-details-marker{display:none}
 .toolbar-menu summary::after{content:"▾";margin-left:5px;color:var(--accent2)}
 .toolbar-menu[open] summary{color:var(--accent2)}
+.toolbar-primary{display:flex;align-items:center;gap:6px;flex:0 0 auto;padding:0 4px}
+.toolbar-primary input[type=text]{width:170px;min-width:140px;max-width:220px}
+.toolbar-primary button{font-size:11px;padding:6px 9px;border:1px solid var(--line);border-radius:7px;background:var(--panel2);color:var(--ink);cursor:pointer}
+.toolbar-primary button:hover{border-color:var(--line2)}
 .toolbar-group{position:absolute;top:100%;left:0;z-index:30;display:flex;flex-direction:column;align-items:stretch;gap:2px;min-width:170px;padding:8px;background:var(--panel);border:1px solid var(--line2);border-radius:6px;box-shadow:0 12px 28px rgba(0,0,0,.5)}
 .toolbar-group button,.toolbar-group select,.toolbar-group input{width:100%;white-space:nowrap;text-align:left}
 .toolbar-group .seg{display:flex;width:100%}
@@ -232,10 +236,16 @@ body.focus-mode #editorPane{flex:1;border-right:0}
 <header>
   <div class="brand">HIISCRIPT <span>offline</span></div>
   <span id="templateNotice" class="template-notice">Starter template — edit it or create a new script <button id="dismissTemplate" type="button">Dismiss</button></span>
+  <div class="toolbar-primary" aria-label="Quick actions">
+    <input type="text" id="docTitle" placeholder="Untitled" autocomplete="off" spellcheck="false" aria-label="Project name">
+    <button id="quickUndo" type="button" title="Undo (Ctrl/Cmd+Z)" aria-label="Undo">Undo</button>
+    <button id="quickRedo" type="button" title="Redo (Ctrl/Cmd+Shift+Z)" aria-label="Redo">Redo</button>
+    <button id="quickSave" type="button" title="Save draft">Save</button>
+    <button id="quickExport" type="button" title="Export .fountain">Export</button>
+  </div>
   <details class="toolbar-menu">
     <summary>File</summary>
     <div class="toolbar-group">
-    <input type="text" id="docTitle" placeholder="Untitled" autocomplete="off" spellcheck="false">
     <select id="docSelect" title="Your scripts"></select>
     <button id="btnNew" title="New script">+ New</button>
     <button id="btnNewTemplate" title="Create a new script from the starter template">New from template</button>
@@ -2115,6 +2125,15 @@ $("#btnExportMarkdown").addEventListener("click", () => {
 
 $("#btnUndo").addEventListener("click", undo);
 $("#btnRedo").addEventListener("click", redo);
+$("#quickUndo").addEventListener("click", undo);
+$("#quickRedo").addEventListener("click", redo);
+$("#quickSave").addEventListener("click", () => saveDraftFile().catch(() => setStatus("Could not save draft")));
+$("#quickExport").addEventListener("click", () => {
+  flush();
+  const d = activeDoc();
+  const safe = (d.title || "screenplay").replace(/[^\w\-. ]+/g, "").trim() || "screenplay";
+  download(safe + ".fountain", d.text, "text/plain;charset=utf-8");
+});
 $("#btnScenes").addEventListener("click", () => {
   renderSceneNavigator();
   $("#sceneNav").classList.toggle("open");
@@ -2167,6 +2186,14 @@ $("#btnAbout").addEventListener("click", () => { $("#aboutModal").classList.add(
 $("#closeAbout").addEventListener("click", () => ScreenplayAccessibility.closeModal($("#aboutModal")));
 $("#aboutModal").addEventListener("click", (e) => { if(e.target.id === "aboutModal") ScreenplayAccessibility.closeModal($("#aboutModal")); });
 
+document.querySelectorAll(".toolbar-menu").forEach(menu => {
+  menu.addEventListener("mouseleave", () => menu.removeAttribute("open"));
+});
+document.addEventListener("click", (e) => {
+  if(!e.target.closest(".toolbar-menu") && !e.target.closest("summary")) {
+    document.querySelectorAll(".toolbar-menu").forEach(menu => menu.removeAttribute("open"));
+  }
+});
 document.addEventListener("keydown", (e) => {
   const mod = e.metaKey || e.ctrlKey;
   if(mod && e.key.toLowerCase() === "z"){
@@ -2180,6 +2207,7 @@ document.addEventListener("keydown", (e) => {
     ScreenplayAccessibility.closeModal($("#findModal"));
     $("#sceneNav").classList.remove("open");
     hideAuto();
+    document.querySelectorAll(".toolbar-menu").forEach(menu => menu.removeAttribute("open"));
   }
 });
 
