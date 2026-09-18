@@ -8,6 +8,8 @@ Hiiscript is open source software released under the [MIT License](LICENSE).
 
 **Project page:** [kabrownie.github.io/Hiiscript](https://kabrownie.github.io/Hiiscript)
 
+Support continued development: [Sponsor Hiiscript on GitHub](https://github.com/sponsors/kabrownie)
+
 **Direct downloads:** [Windows installer](https://github.com/kabrownie/Hiiscript/releases/latest/download/Hiiscript-latest-windows-setup.exe) | [Windows portable](https://github.com/kabrownie/Hiiscript/releases/latest/download/Hiiscript-latest-windows-portable.exe) | [Linux AppImage](https://github.com/kabrownie/Hiiscript/releases/latest/download/Hiiscript-latest-linux.AppImage) | [Ubuntu/Debian](https://github.com/kabrownie/Hiiscript/releases/latest/download/Hiiscript-latest-linux.deb) | [Android APK](https://github.com/kabrownie/Hiiscript/releases/latest/download/Hiiscript-latest-android.apk)
 
 **Release page:** [GitHub Releases](https://github.com/kabrownie/Hiiscript/releases/latest)
