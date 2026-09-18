@@ -11,10 +11,10 @@ permissions:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: npm
@@ -23,10 +23,10 @@ jobs:
 
   build-linux:
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: npm
@@ -36,19 +36,19 @@ jobs:
         run: |
           cp dist/*.AppImage dist/Hiiscript-latest-linux.AppImage
           cp dist/*.deb dist/Hiiscript-latest-linux.deb
-      - name: Create checksums
-        run: find dist -maxdepth 1 -type f -print0 | xargs -0 sha256sum > dist/SHA256SUMS.txt
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: linux-builds
-          path: dist/
+          path: |
+            dist/Hiiscript-latest-linux.AppImage
+            dist/Hiiscript-latest-linux.deb
 
   build-windows:
     needs: test
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: npm
@@ -69,28 +69,27 @@ jobs:
         run: |
           cp dist/*portable*.exe dist/Hiiscript-latest-windows-portable.exe
           cp dist/*setup*.exe dist/Hiiscript-latest-windows-setup.exe
-      - name: Create checksums
-        shell: bash
-        run: find dist -maxdepth 1 -type f -print0 | xargs -0 sha256sum > dist/SHA256SUMS.txt
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: windows-builds
-          path: dist/
+          path: |
+            dist/Hiiscript-latest-windows-portable.exe
+            dist/Hiiscript-latest-windows-setup.exe
 
   build-android:
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: npm
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: '21'
-      - uses: android-actions/setup-android@v3
+      - uses: android-actions/setup-android@v4
         with:
           packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
       - run: npm ci
@@ -98,7 +97,7 @@ jobs:
       - run: npm run android:build
       - name: Create stable download name
         run: cp android/app/build/outputs/apk/debug/app-debug.apk Hiiscript-latest-android.apk
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: android-builds
           path: Hiiscript-latest-android.apk
@@ -106,24 +105,25 @@ jobs:
   publish:
     if: startsWith(github.ref, 'refs/tags/v')
     needs: [build-linux, build-windows, build-android]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v8
         with:
           path: release
       - name: Package release assets
         run: |
           mkdir publish
-          find release -type f -not -name '*.blockmap' -not -name 'SHA256SUMS.txt' -exec cp {} publish/ \;
-          test -n "$(find publish -maxdepth 1 -type f -print -quit)"
-          find publish -maxdepth 1 -type f -print0 | xargs -0 sha256sum > publish/SHA256SUMS.txt
+          cp release/linux-builds/Hiiscript-latest-linux.AppImage publish/
+          cp release/linux-builds/Hiiscript-latest-linux.deb publish/
+          cp release/windows-builds/Hiiscript-latest-windows-portable.exe publish/
+          cp release/windows-builds/Hiiscript-latest-windows-setup.exe publish/
+          cp release/android-builds/Hiiscript-latest-android.apk publish/
+          test "$(find publish -maxdepth 1 -type f | wc -l)" -eq 5
       - uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
           body_path: docs/releases/1.0.2.md
-          files: |
-            publish/*
-            docs/screenshots/*
+          files: publish/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
