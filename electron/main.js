@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog, ipcMain } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain, shell, session } = require('electron');
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
@@ -12,18 +12,30 @@ function createWindow() {
     height: 850,
     minWidth: 720,
     minHeight: 560,
-    webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false }
+    icon: path.join(__dirname, '..', 'images', 'icons', '256x256.png'),
+    webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, sandbox: true }
+  });
+  window.webContents.setWindowOpenHandler(({ url }) => {
+    if(/^https:\/\//i.test(url)) shell.openExternal(url);
+    return { action: 'deny' };
+  });
+  window.webContents.on('will-navigate', (event, url) => {
+    if(!url.startsWith('file:')) event.preventDefault();
   });
   const indexPath = path.join(__dirname, '..', 'www', 'index.html');
   window.webContents.on('did-fail-load', (_event, errorCode, errorDescription) => {
-    console.error(`Kabrownie Screen failed to load: ${errorCode} ${errorDescription}`);
+    console.error(`Hiiscript failed to load: ${errorCode} ${errorDescription}`);
   });
   window.loadURL(pathToFileURL(indexPath).toString()).catch(error => {
-    console.error('Kabrownie Screen could not open its editor:', error);
+    console.error('Hiiscript could not open its editor:', error);
   });
 }
 
 ipcMain.handle('draft:save', async (_event, content) => {
+  if(typeof content !== 'string' || Buffer.byteLength(content, 'utf8') > 10 * 1024 * 1024){
+    throw new Error('Draft is invalid or too large');
+  }
+  JSON.parse(content);
   const result = await dialog.showSaveDialog({ defaultPath: 'untitled-screenplay.json', filters: [{ name: 'Screenplay draft', extensions: ['json'] }] });
   if (result.canceled || !result.filePath) return { cancelled: true };
   await fs.writeFile(result.filePath, content, 'utf8');
@@ -33,10 +45,15 @@ ipcMain.handle('draft:save', async (_event, content) => {
 ipcMain.handle('draft:open', async () => {
   const result = await dialog.showOpenDialog({ properties: ['openFile'], filters: [{ name: 'Screenplay draft', extensions: ['json'] }] });
   if (result.canceled || result.filePaths.length === 0) return { cancelled: true };
-  return { cancelled: false, filePath: result.filePaths[0], content: await fs.readFile(result.filePaths[0], 'utf8') };
+  const content = await fs.readFile(result.filePaths[0], 'utf8');
+  if(Buffer.byteLength(content, 'utf8') > 10 * 1024 * 1024) throw new Error('Draft is too large');
+  const draft = JSON.parse(content);
+  if(!draft || typeof draft.text !== 'string') throw new Error('Draft is invalid');
+  return { cancelled: false, filePath: result.filePaths[0], content };
 });
 
 app.whenReady().then(() => {
+  session.defaultSession.setPermissionRequestHandler((_webContents, _permission, callback) => callback(false));
   createWindow();
   app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 });

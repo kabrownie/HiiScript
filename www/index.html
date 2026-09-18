@@ -3,7 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kabrownie Screen</title>
+<link rel="icon" href="../images/cube.png" type="image/png">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://cdnjs.cloudflare.com https://unpkg.com; img-src 'self' data:; font-src 'self';">
+<title>Hiiscript</title>
 <style>
 :root{
   --bg:#151518; --bg2:#1d1d21; --panel:#25252a; --panel2:#2b2b31;
@@ -22,7 +24,7 @@ body{
 
 /* ================= header ================= */
 header{
-  display:flex;align-items:center;gap:7px;padding:7px 11px;flex-wrap:wrap;
+  display:flex;align-items:center;gap:6px;padding:7px 11px;flex-wrap:nowrap;
   background:var(--panel);
   border-bottom:1px solid var(--line);
   box-shadow:0 2px 14px rgba(183,140,255,.09);
@@ -33,24 +35,35 @@ header{
   -webkit-background-clip:text;background-clip:text;color:transparent;font-size:14px}
 .brand span{font-weight:400;font-size:10.5px;letter-spacing:.4px;color:var(--muted);
   -webkit-text-fill-color:var(--muted)}
+.toolbar-menu{position:relative;flex:0 0 auto}
+.toolbar-menu summary{list-style:none;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;padding:6px 8px;border-left:1px solid var(--line)}
+.toolbar-menu summary::-webkit-details-marker{display:none}
+.toolbar-menu summary::after{content:"▾";margin-left:5px;color:var(--accent2)}
+.toolbar-menu[open] summary{color:var(--accent2)}
+.toolbar-group{position:absolute;top:100%;left:0;z-index:30;display:flex;flex-direction:column;align-items:stretch;gap:2px;min-width:170px;padding:8px;background:var(--panel);border:1px solid var(--line2);border-radius:6px;box-shadow:0 12px 28px rgba(0,0,0,.5)}
+.toolbar-group button,.toolbar-group select,.toolbar-group input{width:100%;white-space:nowrap;text-align:left}
+.toolbar-group .seg{display:flex;width:100%}
+.toolbar-group .seg button{text-align:center}
 input[type=text]{
   font:inherit;color:var(--ink);background:#2b2b31;border:1px solid var(--line);
-  border-radius:7px;padding:5px 10px;outline:none;min-width:150px;flex:0 1 210px;
+  border-radius:7px;padding:4px 8px;outline:none;min-width:150px;flex:0 0 180px;
 }
 input[type=text]:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(183,140,255,.16)}
 button,select{
-  font:inherit;color:var(--ink);background:#2b182e;border:1px solid var(--line);
+  font:inherit;color:var(--ink);background:transparent;border:1px solid var(--line);
   border-radius:7px;padding:5px 10px;cursor:pointer;transition:.12s;
 }
-button:hover,select:hover{background:#432041;border-color:var(--line2)}
+button{border:0}
+button:hover,select:hover{border-color:var(--line2)}
 button:active{transform:translateY(1px)}
-button.primary{background:var(--accent);border-color:var(--accent);font-weight:600;color:#1d1230}
-button.primary:hover{background:var(--accent2);border-color:var(--accent2)}
+button:focus-visible,input:focus-visible,select:focus-visible,[contenteditable="true"]:focus-visible{outline:3px solid var(--accent2);outline-offset:2px}
+button.primary{background:transparent;font-weight:600;color:var(--accent2)}
+button.primary:hover{background:transparent}
 .seg{display:flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
 .seg button{border:0;border-radius:0;background:transparent;padding:5px 11px}
-.seg button.active{background:var(--accent);color:#1d1230;font-weight:600}
-.spacer{flex:1}
-.status{color:var(--accent2);font-size:11.5px;white-space:nowrap;padding-left:4px;font-weight:600}
+.seg button.active{background:transparent;color:var(--accent2);font-weight:600}
+.spacer{flex:1 0 8px}
+.status{color:var(--accent2);font-size:11.5px;white-space:nowrap;padding-left:4px;font-weight:600;flex:0 0 auto}
 .template-notice{display:none;align-items:center;gap:6px;color:var(--muted);font-size:11px;padding:3px 7px;border:1px solid var(--line);border-radius:6px}
 .template-notice.visible{display:inline-flex}
 .template-notice button{padding:2px 6px;font-size:11px}
@@ -58,6 +71,12 @@ button.primary:hover{background:var(--accent2);border-color:var(--accent2)}
 /* ================= layout ================= */
 main{flex:1;display:flex;min-height:0;background:var(--bg2)}
 #editorPane{flex:1 1 46%;min-width:0;display:flex;flex-direction:column;border-right:1px solid var(--line);overflow:auto;container-type:inline-size}
+#editorPane{position:relative}
+#sceneNav{position:absolute;z-index:20;top:10px;left:10px;width:min(300px,calc(100% - 20px));max-height:calc(100% - 20px);overflow:auto;padding:12px;background:var(--panel);border:1px solid var(--line2);border-radius:8px;box-shadow:0 16px 36px rgba(0,0,0,.5);display:none}
+#sceneNav.open{display:block}
+#sceneNav h2{font-size:13px;margin:0 0 8px;color:var(--accent2)}
+#sceneNav button{display:block;width:100%;text-align:left;margin:3px 0;background:transparent;border-color:transparent}
+#sceneNav button:hover{border-color:transparent}
 #previewPane{flex:1 1 54%;min-width:0;overflow:auto;background:#111114;padding:22px 16px 70px}
 #previewPane{container-type:inline-size}
 main[data-layout="editor"] #previewPane{display:none}
@@ -183,6 +202,7 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
 .library-entry button{padding:4px 8px}
 .library-actions{justify-content:flex-end}
 .about-box{max-width:680px}
+.about-logo{display:block;width:min(100%,420px);height:auto;margin:0 auto 16px}
 .about-box a{color:var(--accent2);font-weight:600}
 @media (max-width:700px){.library-grid{grid-template-columns:1fr}}
 
@@ -199,43 +219,80 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
   .page .pagebreak{border:0;break-after:page;page-break-after:always}
   .page + .page{break-before:page}
 }
+body.focus-mode header{display:none}
+body.focus-mode #previewPane{display:none}
+body.focus-mode #editorPane{flex:1;border-right:0}
+.stats{color:var(--muted);font-size:11px;white-space:nowrap;padding:0 4px}
+.dirty{color:#ffd166}
+.saved{color:#9be7a5}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="brand">KABROWNIE SCREEN <span>offline</span></div>
+  <div class="brand">HIISCRIPT <span>offline</span></div>
   <span id="templateNotice" class="template-notice">Starter template — edit it or create a new script <button id="dismissTemplate" type="button">Dismiss</button></span>
-  <input type="text" id="docTitle" placeholder="Untitled" autocomplete="off" spellcheck="false">
-  <select id="docSelect" title="Your scripts"></select>
-  <button id="btnNew" title="New script">+ New</button>
-  <button id="btnNewTemplate" title="Create a new script from the starter template">New from template</button>
-  <button id="btnDelete" title="Delete this script">✕</button>
-  <button id="btnFrontPage" title="Add a screenplay title page">Front page</button>
-  <button id="btnPageBreak" title="Insert a new page">Page break</button>
-  <button id="btnLibrary" title="Manage saved characters and scenes">Library</button>
+  <details class="toolbar-menu">
+    <summary>File</summary>
+    <div class="toolbar-group">
+    <input type="text" id="docTitle" placeholder="Untitled" autocomplete="off" spellcheck="false">
+    <select id="docSelect" title="Your scripts"></select>
+    <button id="btnNew" title="New script">+ New</button>
+    <button id="btnNewTemplate" title="Create a new script from the starter template">New from template</button>
+    <button id="btnImport" class="primary" title="Import .pdf .fountain .txt .fdx">Import</button>
+    <button id="btnExport" title="Export .fountain">Fountain</button>
+    <button id="btnExportMarkdown" title="Export Markdown">Markdown</button>
+    <button id="btnOpen" title="Open a saved draft">Open</button>
+    <button id="btnSave" title="Save a draft file">Save</button>
+    </div>
+  </details>
+  <details class="toolbar-menu">
+    <summary>Edit</summary>
+    <div class="toolbar-group">
+    <button id="btnUndo" title="Undo (Ctrl/Cmd+Z)" aria-label="Undo">↶</button>
+    <button id="btnRedo" title="Redo (Ctrl/Cmd+Shift+Z)" aria-label="Redo">↷</button>
+    <button id="btnFind" title="Find and replace">Find</button>
+    <button id="btnFrontPage" title="Add a screenplay title page">Front page</button>
+    <button id="btnPageBreak" title="Insert a new page">Page break</button>
+    </div>
+  </details>
+  <details class="toolbar-menu">
+    <summary>View</summary>
+    <div class="toolbar-group">
+    <button id="btnScenes" title="Open scene navigator">Scenes</button>
+    <button id="btnFocus" title="Toggle focus mode">Focus</button>
+    <div class="seg" role="group" aria-label="Layout">
+      <button data-layout="split" class="active">Split</button>
+      <button data-layout="editor">Write</button>
+      <button data-layout="preview">Preview</button>
+    </div>
+    <select id="pageZoom" title="Page zoom" aria-label="Page zoom">
+      <option value="0.75">75%</option>
+      <option value="0.9">90%</option>
+      <option value="1" selected>100%</option>
+      <option value="1.1">110%</option>
+      <option value="1.25">125%</option>
+    </select>
+    </div>
+  </details>
+  <details class="toolbar-menu">
+    <summary>Tools</summary>
+    <div class="toolbar-group">
+    <button id="btnLibrary" title="Manage saved characters and scenes">Library</button>
+    <button id="btnPrint" title="Print or save as PDF">PDF</button>
+    <button id="btnLaunchers" title="Download Windows & Linux launchers">⤓ Run</button>
+    </div>
+  </details>
   <div class="spacer"></div>
-  <div class="seg" role="group" aria-label="Layout">
-    <button data-layout="split" class="active">Split</button>
-    <button data-layout="editor">Write</button>
-    <button data-layout="preview">Preview</button>
-  </div>
-  <select id="pageZoom" title="Page zoom" aria-label="Page zoom">
-    <option value="0.75">75%</option>
-    <option value="0.9">90%</option>
-    <option value="1" selected>100%</option>
-    <option value="1.1">110%</option>
-    <option value="1.25">125%</option>
-  </select>
-  <button id="btnImport" class="primary" title="Import .pdf .fountain .txt .fdx">Import</button>
-  <button id="btnExport" title="Export .fountain">Export</button>
-  <button id="btnOpen" title="Open a saved draft">Open</button>
-  <button id="btnSave" title="Save a draft file">Save</button>
-  <button id="btnPrint" title="Print or save as PDF">PDF</button>
-  <button id="btnLaunchers" title="Download Windows & Linux launchers">⤓ Run</button>
-  <button id="btnHelp" title="Fountain cheat sheet">?</button>
-  <button id="btnAbout" title="About Kabrownie Screen">About</button>
+  <details class="toolbar-menu">
+    <summary>Help</summary>
+    <div class="toolbar-group">
+    <button id="btnHelp" title="Fountain cheat sheet">?</button>
+    <button id="btnAbout" title="About Hiiscript">About</button>
+    </div>
+  </details>
   <span class="status" id="status" role="status" aria-live="polite"></span>
+  <span class="stats" id="stats" aria-live="polite"></span>
   <input type="file" id="fileInput" accept=".pdf,.fountain,.txt,.spmd,.md,.fdx,.xml" hidden>
   <input type="file" id="draftInput" accept=".json" hidden>
 </header>
@@ -243,6 +300,7 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
 <main id="main" data-layout="split">
   <section id="editorPane">
     <div id="editor" contenteditable="true" role="textbox" aria-label="Screenplay editor" aria-multiline="true" spellcheck="false"></div>
+    <aside id="sceneNav" aria-label="Scene navigator"><h2>Scenes</h2><div id="sceneList"></div></aside>
   </section>
   <section id="previewPane">
     <div id="preview" role="document" aria-label="Screenplay preview"></div>
@@ -251,10 +309,21 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
 
 <div id="autoBox"></div>
 
+<div class="modal" id="findModal">
+  <div class="box">
+    <h2>Find and replace</h2>
+    <label for="findText">Find</label>
+    <input id="findText" type="text" autocomplete="off">
+    <label for="replaceText">Replace with</label>
+    <input id="replaceText" type="text" autocomplete="off">
+    <div class="row"><button id="findNext">Find next</button><button id="replaceOne">Replace</button><button id="replaceAll">Replace all</button><button class="close primary" id="closeFind">Done</button></div>
+  </div>
+</div>
+
 <div class="modal" id="modal">
   <div class="box">
-    <h2>Kabrownie Screen — quick guide</h2>
-    <p style="margin:0 0 6px">Plain text on the left, formatted screenplay on the right. Everything is saved on this device automatically.</p>
+    <h2>Hiiscript — quick guide</h2>
+    <p style="margin:0 0 6px">Plain text on the left, formatted screenplay on the right. Recovery snapshots are saved on this device automatically; use Save to write a draft file.</p>
 
     <h3>Core formatting components</h3>
     <table>
@@ -295,10 +364,10 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
     <p>Drop in a screenplay PDF — the importer reads the text positions to reconstruct scene headings, action, characters, dialogue and transitions. It needs an internet connection the <i>first</i> time to fetch the PDF reader, then it's cached for offline use.</p>
 
     <h3>Running it like an app</h3>
-    <p>Press <b>⤓ Run</b> to download <code>KabrownieScreen.bat</code> (Windows) and <code>kabrownie-screen.sh</code> (Linux). Save this page as <code>KabrownieScreen.html</code> in the same folder, then double-click the launcher. On Linux run <code>chmod +x kabrownie-screen.sh</code> once.</p>
+    <p>Press <b>⤓ Run</b> to download <code>Hiiscript.bat</code> (Windows) and <code>hiiscript.sh</code> (Linux). Save this page as <code>Hiiscript.html</code> in the same folder, then double-click the launcher. On Linux run <code>chmod +x hiiscript.sh</code> once.</p>
 
     <h3>Your data</h3>
-    <p>Everything lives in this browser's local storage. Export <code>.fountain</code> regularly — it's plain text and opens in any other screenwriting app.</p>
+    <p>Recovery snapshots, scripts, settings, characters, and scenes live in this browser's local storage. Draft files are written only when you choose <b>Save</b>. Export <code>.fountain</code> regularly — it's plain text and portable.</p>
 
     <button class="close primary" id="btnCloseModal">Close</button>
   </div>
@@ -327,13 +396,14 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
 
 <div class="modal" id="aboutModal">
   <div class="box about-box">
-    <h2>Kabrownie Screen</h2>
+    <img class="about-logo" src="../images/hiiscreen.png" alt="Hiiscript">
+    <h2>Hiiscript</h2>
     <p><strong>Created by <a href="https://kabrownie.digital" target="_blank" rel="noreferrer">Kabrownie Digital</a>.</strong></p>
-    <p>Kabrownie Screen is an offline-first screenplay writer for Fountain scripts. It is designed to keep writing, drafts, and exports under the writer's control.</p>
+    <p>Hiiscript is an offline-first screenplay writer for Fountain scripts. It is designed to keep writing, drafts, and exports under the writer's control.</p>
 
     <h3>Privacy policy</h3>
-    <p><strong>Your scripts stay on your device.</strong> The app stores drafts, settings, characters, and scene suggestions in local browser storage. Draft files are written only when you choose <b>Save</b>, and only to the location you select.</p>
-    <p>Kabrownie Screen does not include accounts, advertising, analytics, tracking pixels, or background uploads. The app does not sell or share screenplay content.</p>
+    <p><strong>Your scripts stay on your device.</strong> The app stores recovery snapshots, drafts, settings, characters, and scene suggestions in local browser storage. Draft files are written only when you choose <b>Save</b>, and only to the location you select.</p>
+    <p>Hiiscript does not include accounts, advertising, analytics, tracking pixels, or background uploads. The app does not sell or share screenplay content.</p>
     <p>PDF import may load the open-source PDF.js library from a public CDN the first time it is used. The PDF is processed in the app; no screenplay upload service is used. For fully offline use, import Fountain, text, or Final Draft files instead.</p>
 
     <h3>Open source</h3>
@@ -350,7 +420,7 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
 <script>
 "use strict";
 /* ============================================================
-   Kabrownie Screen — a single-file offline Fountain screenwriter
+  Hiiscript — a single-file offline Fountain screenwriter
    ============================================================ */
 
 const $ = (s) => document.querySelector(s);
@@ -362,6 +432,9 @@ const statusEl    = $("#status");
 const mainEl      = $("#main");
 const autoBox     = $("#autoBox");
 const templateNotice = $("#templateNotice");
+const statsEl      = $("#stats");
+const RECOVERY_KEY = "kabrownie.screen.recovery.v1";
+const MAX_DRAFT_BYTES = 10 * 1024 * 1024;
 
 /* ================= utilities ================= */
 
@@ -388,9 +461,13 @@ const detectType = ScreenplayCore.detectType;
 
 const KEY = "kabrownie.screen.v1";
 let saveTimer = null;
+let dirty = false;
+let history = [];
+let historyIndex = -1;
+let applyingHistory = false;
 const STARTER_TEMPLATE = `Title: The Last Signal
 Credit: Written by
-Author: Kabrownie Screen Template
+Author: Hiiscript Template
 Draft date: 2026-09-17
 
 INT. CITY ROOFTOP - NIGHT
@@ -478,6 +555,37 @@ let store = loadStore();
 function persist(){
   try{ localStorage.setItem(KEY, JSON.stringify(store)); }
   catch(e){ setStatus("⚠ storage full — export a backup"); }
+}
+
+function setSaveState(saved){
+  dirty = !saved;
+  statusEl.textContent = saved ? "Saved" : "Unsaved changes";
+  statusEl.classList.toggle("saved", saved);
+  statusEl.classList.toggle("dirty", !saved);
+}
+
+function writeRecoverySnapshot(){
+  const d = activeDoc();
+  if(!d) return;
+  try{
+    localStorage.setItem(RECOVERY_KEY, JSON.stringify({
+      version: 1, id: d.id, title: titleInput.value.trim() || "Untitled",
+      text: serialize(), updated: Date.now()
+    }));
+  }catch(e){ setStatus("⚠ recovery storage full — export a backup"); }
+}
+
+function clearRecoverySnapshot(){
+  try{ localStorage.removeItem(RECOVERY_KEY); }catch(e){}
+}
+
+function recoverySnapshot(){
+  try{
+    const raw = localStorage.getItem(RECOVERY_KEY);
+    if(!raw) return null;
+    const value = JSON.parse(raw);
+    return ScreenplayCore.validateDraft(value, MAX_DRAFT_BYTES);
+  }catch(e){ clearRecoverySnapshot(); return null; }
 }
 
 function activeDoc(){
@@ -715,6 +823,8 @@ function queueRender(){
 
 function render(){
   const src = serialize();
+  const scriptStats = ScreenplayCore.getScriptStats(src);
+  statsEl.textContent = `${scriptStats.words} words · ${scriptStats.pages} page${scriptStats.pages === 1 ? "" : "s"} · ~${scriptStats.minutes} min`;
   const { titlePage, blocks } = parseFountain(src);
   lastBlocks = blocks;
   const pages = [];
@@ -753,6 +863,9 @@ function paginatePreview(){
 }
 
 function scheduleSave(){
+  dirty = true;
+  setSaveState(false);
+  writeRecoverySnapshot();
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => { flush(); refreshDocList(); setStatus("Saved"); }, 500);
 }
@@ -767,7 +880,43 @@ function flush(){
   rememberCharacters();
   rememberScenes();
   persist();
+  clearRecoverySnapshot();
+  setSaveState(true);
 }
+
+function captureHistory(){
+  if(applyingHistory) return;
+  const snapshot = { text: serialize(), title: titleInput.value };
+  const current = history[historyIndex];
+  if(current && current.text === snapshot.text && current.title === snapshot.title) return;
+  history = history.slice(0, historyIndex + 1);
+  history.push(snapshot);
+  if(history.length > 100) history.shift();
+  historyIndex = history.length - 1;
+  updateHistoryButtons();
+}
+
+function updateHistoryButtons(){
+  $("#btnUndo").disabled = historyIndex <= 0;
+  $("#btnRedo").disabled = historyIndex < 0 || historyIndex >= history.length - 1;
+}
+
+function restoreHistory(index){
+  if(index < 0 || index >= history.length) return;
+  applyingHistory = true;
+  const snapshot = history[index];
+  titleInput.value = snapshot.title;
+  loadIntoEditor(snapshot.text);
+  historyIndex = index;
+  applyingHistory = false;
+  render();
+  scheduleSave();
+  highlightActive();
+  updateHistoryButtons();
+}
+
+function undo(){ restoreHistory(historyIndex - 1); }
+function redo(){ restoreHistory(historyIndex + 1); }
 
 function draftJson(){
   flush();
@@ -797,8 +946,7 @@ async function saveDraftFile(){
 }
 
 function loadDraftContent(content){
-  const draft = JSON.parse(content);
-  if(!draft || typeof draft.text !== "string") throw new Error("Invalid draft");
+  const draft = ScreenplayCore.validateDraft(JSON.parse(content), MAX_DRAFT_BYTES);
   const d = makeDoc(draft.title || "Untitled");
   d.text = draft.text;
   d.updated = Number(draft.updated) || Date.now();
@@ -820,6 +968,9 @@ function loadDraftContent(content){
   rememberCharacters();
   rememberScenes();
   persist(); refreshDocList(); render(); highlightActive();
+  clearRecoverySnapshot();
+  setSaveState(true);
+  history = [{text: d.text, title: d.title}]; historyIndex = 0; updateHistoryButtons();
   setStatus("Draft opened");
 }
 
@@ -833,6 +984,7 @@ async function openDraftFile(){
 }
 
 function onEdit(){
+  captureHistory();
   queueRender();
   scheduleSave();
   updateAuto();
@@ -1078,8 +1230,11 @@ function renderAuto(typedPrefix){
     } else {
       html = esc(it);
     }
-    return `<div class="item${idx===autoSel?" sel":""}" data-i="${idx}">${html}</div>`;
+    return `<div class="item${idx===autoSel?" sel":""}" data-i="${idx}" id="auto-item-${idx}" role="option" aria-selected="${idx===autoSel}">${html}</div>`;
   }).join("") + `<div class="hint">Enter to accept · Esc to dismiss</div>`;
+  autoBox.setAttribute("role", "listbox");
+  autoBox.setAttribute("aria-label", "Suggestions");
+  autoBox.setAttribute("aria-activedescendant", `auto-item-${autoSel}`);
   autoBox.querySelectorAll(".item").forEach(el => {
     el.addEventListener("mousedown", (e) => { e.preventDefault(); acceptAuto(autoItems[Number(el.dataset.i)]); });
     el.addEventListener("mouseenter", () => { autoSel = Number(el.dataset.i); renderAuto(typedPrefix); });
@@ -1414,6 +1569,47 @@ function handleImportFile(file){
   return importPlain(file);
 }
 
+function renderSceneNavigator(){
+  const list = $("#sceneList");
+  list.replaceChildren();
+  getLines().forEach(line => {
+    if(line.dataset.type !== "scene" || !line.textContent.trim()) return;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = line.textContent.trim();
+    button.addEventListener("click", () => {
+      line.scrollIntoView({block:"center"});
+      setCaret(line, 0);
+      editorEl.focus();
+    });
+    list.append(button);
+  });
+}
+
+function findText(){ return $("#findText").value; }
+function replaceSelection(replacement){
+  const needle = findText();
+  if(!needle) return false;
+  const source = serialize();
+  const index = source.indexOf(needle);
+  if(index < 0) return false;
+  const next = source.slice(0, index) + replacement + source.slice(index + needle.length);
+  loadIntoEditor(next);
+  onEdit();
+  return true;
+}
+
+function replaceAll(){
+  const needle = findText();
+  if(!needle) return;
+  const source = serialize();
+  const next = source.split(needle).join($("#replaceText").value);
+  if(next === source){ setStatus("Text not found"); return; }
+  loadIntoEditor(next);
+  onEdit();
+  setStatus("Replaced all");
+}
+
 function importPlain(file){
   const reader = new FileReader();
   reader.onload = () => {
@@ -1682,13 +1878,13 @@ function pdfPagesToFountain(pages){
 function downloadLaunchers(){
   const bat =
 `@echo off
-rem Kabrownie Screen launcher (Windows)
-rem Place this file next to KabrownieScreen.html and double-click it.
-set "HTML=%~dp0KabrownieScreen.html"
+rem Hiiscript launcher (Windows)
+rem Place this file next to Hiiscript.html and double-click it.
+set "HTML=%~dp0Hiiscript.html"
 if not exist "%HTML%" (
   echo.
-  echo   Could not find KabrownieScreen.html next to this file.
-  echo   Save the page as KabrownieScreen.html in the same folder.
+  echo   Could not find Hiiscript.html next to this file.
+  echo   Save the page as Hiiscript.html in the same folder.
   echo.
   pause
   exit /b 1
@@ -1697,12 +1893,12 @@ start "" "%HTML%"
 `;
   const sh =
 `#!/bin/sh
-# Kabrownie Screen launcher (Linux / macOS)
-# Place this next to KabrownieScreen.html, then: chmod +x kabrownie-screen.sh
+# Hiiscript launcher (Linux / macOS)
+# Place this next to Hiiscript.html, then: chmod +x hiiscript.sh
 DIR="$(cd "$(dirname "$0")" && pwd)"
-HTML="$DIR/KabrownieScreen.html"
+HTML="$DIR/Hiiscript.html"
 if [ ! -f "$HTML" ]; then
-  echo "Could not find KabrownieScreen.html next to this script."
+  echo "Could not find Hiiscript.html next to this script."
   exit 1
 fi
 URL="file://$HTML"
@@ -1714,8 +1910,8 @@ if command -v google-chrome >/dev/null 2>&1; then exec google-chrome "$URL"; fi
 if command -v chromium >/dev/null 2>&1; then exec chromium "$URL"; fi
 echo "Open this in your browser: $URL"
 `;
-  download("KabrownieScreen.bat", bat, "application/bat");
-  setTimeout(() => download("kabrownie-screen.sh", sh, "text/x-shellscript"), 350);
+  download("Hiiscript.bat", bat, "application/bat");
+  setTimeout(() => download("hiiscript.sh", sh, "text/x-shellscript"), 350);
   setStatus("Launchers downloaded — put them beside the .html");
 }
 
@@ -1827,6 +2023,7 @@ $("#libraryFile").addEventListener("change", e => {
 titleInput.addEventListener("input", () => {
   const d = activeDoc();
   if(d){ d.title = titleInput.value.trim() || "Untitled"; }
+  captureHistory();
   scheduleSave();
 });
 
@@ -1871,24 +2068,6 @@ $("#btnNewTemplate").addEventListener("click", () => {
   editorEl.focus();
 });
 
-$("#btnDelete").addEventListener("click", () => {
-  if(store.docs.length === 1){
-    if(!confirm("Delete your only script? It will be replaced with a blank one.")) return;
-    store.docs = [makeDoc("Untitled")];
-    store.active = store.docs[0].id;
-  } else {
-    const d = activeDoc();
-    if(!confirm(`Delete "${d.title}"? This cannot be undone.`)) return;
-    store.docs = store.docs.filter(x => x.id !== d.id);
-    store.active = store.docs[0].id;
-  }
-  const d = activeDoc();
-  titleInput.value = d.title;
-  loadIntoEditor(d.text);
-  persist(); refreshDocList(); render();
-  highlightActive();
-});
-
 $("#btnFrontPage").addEventListener("click", () => {
   const src = serialize();
   if(parseFountain(src).titlePage){
@@ -1927,6 +2106,27 @@ $("#btnExport").addEventListener("click", () => {
   download(safe + ".fountain", d.text, "text/plain;charset=utf-8");
 });
 
+$("#btnExportMarkdown").addEventListener("click", () => {
+  flush();
+  const d = activeDoc();
+  const safe = (d.title || "screenplay").replace(/[^\w\-. ]+/g, "").trim() || "screenplay";
+  download(safe + ".md", ScreenplayCore.fountainToMarkdown(d.text), "text/markdown;charset=utf-8");
+});
+
+$("#btnUndo").addEventListener("click", undo);
+$("#btnRedo").addEventListener("click", redo);
+$("#btnScenes").addEventListener("click", () => {
+  renderSceneNavigator();
+  $("#sceneNav").classList.toggle("open");
+});
+$("#btnFocus").addEventListener("click", () => document.body.classList.toggle("focus-mode"));
+$("#btnFind").addEventListener("click", () => { $("#findModal").classList.add("open"); ScreenplayAccessibility.openModal($("#findModal"), $("#btnFind")); });
+$("#closeFind").addEventListener("click", () => ScreenplayAccessibility.closeModal($("#findModal")));
+$("#findModal").addEventListener("click", e => { if(e.target.id === "findModal") ScreenplayAccessibility.closeModal($("#findModal")); });
+$("#findNext").addEventListener("click", () => setStatus(replaceSelection(findText()) ? "Found" : "Text not found"));
+$("#replaceOne").addEventListener("click", () => setStatus(replaceSelection($("#replaceText").value) ? "Replaced" : "Text not found"));
+$("#replaceAll").addEventListener("click", replaceAll);
+
 $("#btnSave").addEventListener("click", () => saveDraftFile().catch(() => setStatus("Could not save draft")));
 $("#btnOpen").addEventListener("click", () => openDraftFile().catch(() => setStatus("Could not open draft")));
 $("#draftInput").addEventListener("change", (e) => {
@@ -1960,17 +2160,25 @@ $("#btnPrint").addEventListener("click", () => {
 });
 
 $("#btnLaunchers").addEventListener("click", downloadLaunchers);
-$("#btnHelp").addEventListener("click", () => $("#modal").classList.add("open"));
-$("#btnCloseModal").addEventListener("click", () => $("#modal").classList.remove("open"));
-$("#modal").addEventListener("click", (e) => { if(e.target.id === "modal") $("#modal").classList.remove("open"); });
-$("#btnAbout").addEventListener("click", () => $("#aboutModal").classList.add("open"));
-$("#closeAbout").addEventListener("click", () => $("#aboutModal").classList.remove("open"));
-$("#aboutModal").addEventListener("click", (e) => { if(e.target.id === "aboutModal") $("#aboutModal").classList.remove("open"); });
+$("#btnHelp").addEventListener("click", () => { $("#modal").classList.add("open"); ScreenplayAccessibility.openModal($("#modal"), $("#btnHelp")); });
+$("#btnCloseModal").addEventListener("click", () => ScreenplayAccessibility.closeModal($("#modal")));
+$("#modal").addEventListener("click", (e) => { if(e.target.id === "modal") ScreenplayAccessibility.closeModal($("#modal")); });
+$("#btnAbout").addEventListener("click", () => { $("#aboutModal").classList.add("open"); ScreenplayAccessibility.openModal($("#aboutModal"), $("#btnAbout")); });
+$("#closeAbout").addEventListener("click", () => ScreenplayAccessibility.closeModal($("#aboutModal")));
+$("#aboutModal").addEventListener("click", (e) => { if(e.target.id === "aboutModal") ScreenplayAccessibility.closeModal($("#aboutModal")); });
 
 document.addEventListener("keydown", (e) => {
+  const mod = e.metaKey || e.ctrlKey;
+  if(mod && e.key.toLowerCase() === "z"){
+    e.preventDefault();
+    if(e.shiftKey) redo(); else undo();
+    return;
+  }
   if(e.key === "Escape"){
-    $("#modal").classList.remove("open");
-    $("#aboutModal").classList.remove("open");
+    ScreenplayAccessibility.closeModal($("#modal"));
+    ScreenplayAccessibility.closeModal($("#aboutModal"));
+    ScreenplayAccessibility.closeModal($("#findModal"));
+    $("#sceneNav").classList.remove("open");
     hideAuto();
   }
 });
@@ -1990,6 +2198,16 @@ window.addEventListener("beforeunload", flush);
   const d = activeDoc();
   titleInput.value = d.title;
   loadIntoEditor(d.text);
+  const recovery = recoverySnapshot();
+  let recovered = false;
+  if(recovery && recovery.text !== d.text && confirm(`Recover unsaved changes from ${new Date(recovery.updated).toLocaleString()}?`)){
+    titleInput.value = recovery.title;
+    loadIntoEditor(recovery.text);
+    recovered = true;
+    setStatus("Recovered unsaved work");
+  } else {
+    clearRecoverySnapshot();
+  }
   refreshDocList();
   render();
   persist();
@@ -1998,6 +2216,16 @@ window.addEventListener("beforeunload", flush);
   editorEl.focus();
   const first = getLines()[0];
   if(first) setCaret(first, (first.textContent||"").length);
+  history = [{text: serialize(), title: titleInput.value}];
+  historyIndex = 0;
+  updateHistoryButtons();
+  if(recovered){
+    dirty = true;
+    setSaveState(false);
+    writeRecoverySnapshot();
+  } else {
+    setSaveState(true);
+  }
 })();
 </script>
 </body>

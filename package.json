@@ -1,11 +1,11 @@
 {
-  "name": "kabrownie-screen",
+  "name": "hiiscript",
   "version": "1.0.0",
-  "productName": "Kabrownie Screen",
+  "productName": "Hiiscript",
   "description": "An open source screenplay writer.",
   "author": {
-    "name": "Kabrownie Screen",
-    "email": "maintainers@kabrownie-screen.invalid"
+    "name": "Hiiscript",
+    "email": "maintainers@hiiscript.invalid"
   },
   "main": "electron/main.js",
   "scripts": {
@@ -14,7 +14,7 @@
     "web": "npx http-server www -p 8080",
     "test": "node --test test/*.test.js",
     "build:linux": "electron-builder --linux AppImage deb",
-    "build:win": "electron-builder --win nsis portable --config.win.signAndEditExecutable=false",
+    "build:win": "electron-builder --win nsis portable",
     "android:add": "npx cap add android",
     "android:sync": "npx cap sync android",
     "android:open": "npx cap open android",
@@ -38,14 +38,15 @@
     "@capacitor/core": "^7.4.3"
   },
   "build": {
-    "appId": "com.kabrownie.screen",
-    "productName": "Kabrownie Screen",
+    "appId": "com.hiiscript.app",
+    "productName": "Hiiscript",
     "directories": {
       "output": "dist"
     },
     "files": [
       "electron/**/*",
       "www/**/*",
+      "images/**/*",
       "capacitor.config.json",
       "package.json"
     ],
@@ -54,6 +55,7 @@
         "AppImage",
         "deb"
       ],
+      "icon": "images/icons",
       "category": "Office",
       "artifactName": "${name}-${version}-${arch}.${ext}"
     },
@@ -61,7 +63,8 @@
       "target": [
         "nsis",
         "portable"
-      ]
+      ],
+      "icon": "images/hiiscript.ico"
     },
     "nsis": {
       "artifactName": "${productName}-${version}-setup-${arch}.${ext}",

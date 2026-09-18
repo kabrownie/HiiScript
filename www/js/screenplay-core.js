@@ -25,6 +25,48 @@
   function isSceneHeading(value){
     return /^(INT|EXT|EST|INT\.?\/EXT|EXT\.?\/INT|I\/E)\.?\s+.+\s+-\s+\S+/i.test(String(value || "").trim());
   }
+
+  function normalizeFountainText(value){
+    return String(value == null ? "" : value).replace(/\r\n?/g, "\n").replace(/[ \t]+\n/g, "\n");
+  }
+
+  function validateDraft(value, maxBytes){
+    const limit = Number(maxBytes) || 10 * 1024 * 1024;
+    if(!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Draft must be an object");
+    if(typeof value.text !== "string") throw new Error("Draft text is required");
+    if(new TextEncoder().encode(value.text).length > limit) throw new Error("Draft is too large");
+    if(value.lines !== undefined && (!Array.isArray(value.lines) || value.lines.some(line => !line || typeof line.text !== "string"))){
+      throw new Error("Draft lines are invalid");
+    }
+    if(value.title !== undefined && typeof value.title !== "string") throw new Error("Draft title is invalid");
+    return {
+      ...value,
+      title: value.title || "Untitled",
+      lines: Array.isArray(value.lines) ? value.lines : [],
+      characters: Array.isArray(value.characters) ? value.characters : [],
+      scenes: Array.isArray(value.scenes) ? value.scenes : []
+    };
+  }
+
+  function getScriptStats(text){
+    const source = normalizeFountainText(text).trim();
+    const words = source ? source.split(/\s+/).length : 0;
+    const pages = Math.max(1, Math.ceil(words / 250));
+    return { words, pages, minutes: Math.max(1, Math.round(words / 180)) };
+  }
+
+  function fountainToMarkdown(text){
+    return normalizeFountainText(text).split("\n").map(line => {
+      const value = line.trim();
+      if(!value) return "";
+      if(/^#{1,6}\s/.test(value)) return value;
+      if(/^(INT|EXT|EST|I\/E)\.?\s/i.test(value)) return "## " + value;
+      if(/^>\s?/.test(value)) return "**" + value.replace(/^>\s?/, "") + "**";
+      if(/^\(.*\)$/.test(value)) return "*" + value + "*";
+      if(/^[A-Z][A-Z0-9 .'-]{1,47}$/.test(value)) return "### " + value;
+      return value;
+    }).join("\n");
+  }
   
   function detectType(text){
     const t = String(text || "").trim();
@@ -48,7 +90,8 @@
     return "action";
   }
 
-  const api = { cleanList, normalizeLibrary, isCharacterName, isSceneHeading, detectType };
+  const api = { cleanList, normalizeLibrary, isCharacterName, isSceneHeading, detectType,
+    normalizeFountainText, validateDraft, getScriptStats, fountainToMarkdown };
   if(typeof window !== "undefined") window.ScreenplayCore = api;
   if(typeof module !== "undefined" && module.exports) module.exports = api;
 })();
