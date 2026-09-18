@@ -20,7 +20,7 @@ Hiiscript is offline-first. Scripts, settings, characters, and scene suggestions
 
 PDF import may download the open-source PDF.js library from a public CDN the first time it is used. The PDF is processed locally in the app; no screenplay upload service is used.
 
-## Run locally
+## Developer Quick Start
 
 ```bash
 npm install
@@ -41,9 +41,7 @@ On first launch, Hiiscript opens **The Last Signal**, a clearly labeled superher
 
 The **Library** manages saved character and scene suggestions. Entries can be added, renamed, deleted, or transferred as JSON. Preview pages paginate automatically when screenplay content reaches the letter-page boundary.
 
-## Build Instructions
-
-## Download The First Release
+## Download Hiiscript
 
 Use the direct links above, or open the [latest GitHub Release](https://github.com/kabrownie/Hiiscript/releases/latest) to view checksums and release notes.
 
@@ -59,13 +57,17 @@ Unsigned builds may show a Windows unknown-publisher warning. Tagged GitHub rele
 
 The app runs offline after installation. Start with the included template, choose **+ New** for a blank script, or choose **New from template** for another copy of the superhero example.
 
-### First-time setup
+## For Developers
+
+The commands below are only for developers who want to run the source code or create installers. If you only want to use Hiiscript, use the direct download links above instead.
+
+### Run from source
 
 ```bash
 npm install
 ```
 
-### Linux desktop app
+### Build Linux packages
 
 ```bash
 npm run build:linux
@@ -76,7 +78,7 @@ Builds are written to `dist/`:
 - `hiiscript-1.0.2-x86_64.AppImage` runs without installation.
 - `hiiscript-1.0.2-amd64.deb` installs with `sudo dpkg -i`.
 
-### Windows desktop app
+### Build Windows packages
 
 ```bash
 npm run build:win
@@ -86,7 +88,7 @@ This creates an NSIS installer and a portable executable in `dist/`. Electron Bu
 
 Windows Defender may identify an unsigned build as an unknown publisher. Removing that warning requires a code-signing certificate and a signed release build. The workflow supports an encoded `.p12`/`.pfx` certificate through `WINDOWS_CERTIFICATE_BASE64` and its password through `WINDOWS_CERTIFICATE_PASSWORD`.
 
-### Android APK
+### Build the Android APK
 
 Run this once to add the native Android project:
 
