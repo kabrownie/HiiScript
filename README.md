@@ -6,7 +6,9 @@ Created by [Kabrownie Digital](https://kabrownie.digital).
 
 **Project page:** [kabrownie.github.io/Hiiscript](https://kabrownie.github.io/Hiiscript)
 
-**Download the latest release:** [GitHub Releases](https://github.com/kabrownie/Hiiscript/releases/latest)
+**Direct downloads:** [Windows installer](https://github.com/kabrownie/Hiiscript/releases/latest/download/Hiiscript-latest-windows-setup.exe) | [Windows portable](https://github.com/kabrownie/Hiiscript/releases/latest/download/Hiiscript-latest-windows-portable.exe) | [Linux AppImage](https://github.com/kabrownie/Hiiscript/releases/latest/download/Hiiscript-latest-linux.AppImage) | [Ubuntu/Debian](https://github.com/kabrownie/Hiiscript/releases/latest/download/Hiiscript-latest-linux.deb) | [Android APK](https://github.com/kabrownie/Hiiscript/releases/latest/download/Hiiscript-latest-android.apk)
+
+**Release page:** [GitHub Releases](https://github.com/kabrownie/Hiiscript/releases/latest)
 
 ## Release 1.0.2
 
@@ -43,13 +45,15 @@ The **Library** manages saved character and scene suggestions. Entries can be ad
 
 ## Download The First Release
 
-For the newest installers, use the [latest GitHub Release](https://github.com/kabrownie/Hiiscript/releases/latest).
+Use the direct links above, or open the [latest GitHub Release](https://github.com/kabrownie/Hiiscript/releases/latest) to view checksums and release notes.
 
-Choose the file for your computer from the `dist/` folder:
+Choose a direct download below. Clicking a link downloads the latest published build instead of opening the release page:
 
-- **Windows:** `Hiiscript-1.0.2-portable-x64.exe` is the portable app. Double-click it; no installation is required. The `-setup-x64.exe` file is the installable version.
-- **Linux, easiest:** `hiiscript-1.0.2-x86_64.AppImage`. Download it, right-click **Properties > Permissions**, allow it to run as a program, then double-click it.
-- **Ubuntu/Debian:** `hiiscript-1.0.2-amd64.deb`. Double-click it and choose **Install**.
+- **Windows portable:** [Download the latest portable app](https://github.com/kabrownie/Hiiscript/releases/latest/download/Hiiscript-latest-windows-portable.exe). Double-click it; no installation is required.
+- **Windows installer:** [Download the latest Windows installer](https://github.com/kabrownie/Hiiscript/releases/latest/download/Hiiscript-latest-windows-setup.exe).
+- **Linux, easiest:** [Download the latest AppImage](https://github.com/kabrownie/Hiiscript/releases/latest/download/Hiiscript-latest-linux.AppImage). Allow it to run as a program, then double-click it.
+- **Ubuntu/Debian:** [Download the latest DEB package](https://github.com/kabrownie/Hiiscript/releases/latest/download/Hiiscript-latest-linux.deb). Double-click it and choose **Install**.
+- **Android:** [Download the latest Android APK](https://github.com/kabrownie/Hiiscript/releases/latest/download/Hiiscript-latest-android.apk). Open the downloaded file on your Android device to install it.
 
 Unsigned builds may show a Windows unknown-publisher warning. Tagged GitHub releases can be signed by configuring `WINDOWS_CERTIFICATE_BASE64` and `WINDOWS_CERTIFICATE_PASSWORD` repository secrets; the release workflow publishes SHA-256 checksums automatically. Confirm that any file came from the official Hiiscript release page before opening it.
 

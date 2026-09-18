@@ -32,6 +32,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build:linux
+      - name: Create stable download names
+        run: |
+          cp dist/*.AppImage dist/Hiiscript-latest-linux.AppImage
+          cp dist/*.deb dist/Hiiscript-latest-linux.deb
       - name: Create checksums
         run: sha256sum dist/* > dist/SHA256SUMS.txt
       - uses: actions/upload-artifact@v4
@@ -60,6 +64,11 @@ jobs:
         env:
           CSC_LINK: ${{ secrets.WINDOWS_CERTIFICATE_BASE64 }}
           CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+      - name: Create stable download names
+        shell: bash
+        run: |
+          cp dist/*portable*.exe dist/Hiiscript-latest-windows-portable.exe
+          cp dist/*setup*.exe dist/Hiiscript-latest-windows-setup.exe
       - name: Create checksums
         shell: bash
         run: sha256sum dist/* > dist/SHA256SUMS.txt
@@ -68,18 +77,41 @@ jobs:
           name: windows-builds
           path: dist/
 
-  publish:
-    if: startsWith(github.ref, 'refs/tags/v')
-    needs: [build-linux, build-windows]
+  build-android:
+    needs: test
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - run: npm ci
+      - run: npm run android:build
+      - name: Create stable download name
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk Hiiscript-latest-android.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-builds
+          path: Hiiscript-latest-android.apk
+
+  publish:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [build-linux, build-windows, build-android]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           path: release
       - name: Package release assets
         run: |
           mkdir publish
-          find release -type f -not -name '*.blockmap' -exec cp {} publish/ \;
+          find release -type f -not -name '*.blockmap' -not -name 'SHA256SUMS.txt' -exec cp {} publish/ \;
           sha256sum publish/* > publish/SHA256SUMS.txt
       - uses: softprops/action-gh-release@v2
         with:
