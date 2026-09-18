@@ -37,7 +37,7 @@ jobs:
           cp dist/*.AppImage dist/Hiiscript-latest-linux.AppImage
           cp dist/*.deb dist/Hiiscript-latest-linux.deb
       - name: Create checksums
-        run: sha256sum dist/* > dist/SHA256SUMS.txt
+        run: find dist -maxdepth 1 -type f -print0 | xargs -0 sha256sum > dist/SHA256SUMS.txt
       - uses: actions/upload-artifact@v4
         with:
           name: linux-builds
@@ -71,7 +71,7 @@ jobs:
           cp dist/*setup*.exe dist/Hiiscript-latest-windows-setup.exe
       - name: Create checksums
         shell: bash
-        run: sha256sum dist/* > dist/SHA256SUMS.txt
+        run: find dist -maxdepth 1 -type f -print0 | xargs -0 sha256sum > dist/SHA256SUMS.txt
       - uses: actions/upload-artifact@v4
         with:
           name: windows-builds
@@ -112,7 +112,8 @@ jobs:
         run: |
           mkdir publish
           find release -type f -not -name '*.blockmap' -not -name 'SHA256SUMS.txt' -exec cp {} publish/ \;
-          sha256sum publish/* > publish/SHA256SUMS.txt
+          test -n "$(find publish -maxdepth 1 -type f -print -quit)"
+          find publish -maxdepth 1 -type f -print0 | xargs -0 sha256sum > publish/SHA256SUMS.txt
       - uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true

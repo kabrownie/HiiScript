@@ -4,6 +4,8 @@ Hiiscript is an open source screenplay writer built as a small Electron and Capa
 
 Created by [Kabrownie Digital](https://kabrownie.digital).
 
+Hiiscript is open source software released under the [MIT License](LICENSE).
+
 **Project page:** [kabrownie.github.io/Hiiscript](https://kabrownie.github.io/Hiiscript)
 
 **Direct downloads:** [Windows installer](https://github.com/kabrownie/Hiiscript/releases/latest/download/Hiiscript-latest-windows-setup.exe) | [Windows portable](https://github.com/kabrownie/Hiiscript/releases/latest/download/Hiiscript-latest-windows-portable.exe) | [Linux AppImage](https://github.com/kabrownie/Hiiscript/releases/latest/download/Hiiscript-latest-linux.AppImage) | [Ubuntu/Debian](https://github.com/kabrownie/Hiiscript/releases/latest/download/Hiiscript-latest-linux.deb) | [Android APK](https://github.com/kabrownie/Hiiscript/releases/latest/download/Hiiscript-latest-android.apk)
