@@ -94,6 +94,7 @@ jobs:
         with:
           packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
       - run: npm ci
+      - run: npm run android:add
       - run: npm run android:build
       - name: Create stable download name
         run: cp android/app/build/outputs/apk/debug/app-debug.apk Hiiscript-latest-android.apk
