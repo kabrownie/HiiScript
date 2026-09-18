@@ -8,6 +8,10 @@ Created by [Kabrownie Digital](https://kabrownie.digital).
 
 **Download the latest release:** [GitHub Releases](https://github.com/kabrownie/Hiiscript/releases/latest)
 
+## Release 1.0.2
+
+The 1.0.2 release is the first production-ready packaging pass for desktop and Android builds. It targets the same offline screenplay workflow as 1.0.0, with the release pipeline configured for Linux, Windows, and Android artifact generation.
+
 ## Privacy
 
 Hiiscript is offline-first. Scripts, settings, characters, and scene suggestions are stored locally on the user's device. The app has no accounts, advertising, analytics, tracking pixels, or background screenplay uploads. Draft files are written only when the user chooses **Save**.
@@ -43,9 +47,9 @@ For the newest installers, use the [latest GitHub Release](https://github.com/ka
 
 Choose the file for your computer from the `dist/` folder:
 
-- **Windows:** `Hiiscript-1.0.0-portable-x64.exe` is the portable app. Double-click it; no installation is required. The `-setup-x64.exe` file is the installable version.
-- **Linux, easiest:** `hiiscript-1.0.0-x86_64.AppImage`. Download it, right-click **Properties > Permissions**, allow it to run as a program, then double-click it.
-- **Ubuntu/Debian:** `hiiscript-1.0.0-amd64.deb`. Double-click it and choose **Install**.
+- **Windows:** `Hiiscript-1.0.2-portable-x64.exe` is the portable app. Double-click it; no installation is required. The `-setup-x64.exe` file is the installable version.
+- **Linux, easiest:** `hiiscript-1.0.2-x86_64.AppImage`. Download it, right-click **Properties > Permissions**, allow it to run as a program, then double-click it.
+- **Ubuntu/Debian:** `hiiscript-1.0.2-amd64.deb`. Double-click it and choose **Install**.
 
 Unsigned builds may show a Windows unknown-publisher warning. Tagged GitHub releases can be signed by configuring `WINDOWS_CERTIFICATE_BASE64` and `WINDOWS_CERTIFICATE_PASSWORD` repository secrets; the release workflow publishes SHA-256 checksums automatically. Confirm that any file came from the official Hiiscript release page before opening it.
 
@@ -65,8 +69,8 @@ npm run build:linux
 
 Builds are written to `dist/`:
 
-- `hiiscript-1.0.0-x86_64.AppImage` runs without installation.
-- `hiiscript-1.0.0-amd64.deb` installs with `sudo dpkg -i`.
+- `hiiscript-1.0.2-x86_64.AppImage` runs without installation.
+- `hiiscript-1.0.2-amd64.deb` installs with `sudo dpkg -i`.
 
 ### Windows desktop app
 
