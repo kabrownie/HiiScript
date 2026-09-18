@@ -65,6 +65,17 @@ The app runs offline after installation. Start with the included template, choos
 
 The commands below are only for developers who want to run the source code or create installers. If you only want to use Hiiscript, use the direct download links above instead.
 
+## Collaborate
+
+Contributions and ideas are welcome. You can help by reporting bugs, improving accessibility, testing releases, writing documentation, or adding features.
+
+- [Report a bug or request a feature](https://github.com/kabrownie/HiiScript/issues/new/choose)
+- [Browse open issues](https://github.com/kabrownie/HiiScript/issues)
+- [Open a pull request](https://github.com/kabrownie/HiiScript/compare)
+- [Sponsor the project](https://github.com/sponsors/kabrownie)
+
+To contribute code, fork the repository, create a focused branch, run `npm test`, and open a pull request explaining what changed and how it was tested. Please keep changes focused and preserve the offline-first experience.
+
 ### Run from source
 
 ```bash
