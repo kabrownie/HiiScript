@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="../images/cube.png" type="image/png">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://cdnjs.cloudflare.com https://unpkg.com; img-src 'self' data:; font-src 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com; img-src 'self' data:; font-src 'self';">
 <title>Hiiscript</title>
 <style>
 :root{
@@ -36,6 +36,7 @@ header{
 .brand span{font-weight:400;font-size:10.5px;letter-spacing:.4px;color:var(--muted);
   -webkit-text-fill-color:var(--muted)}
 .toolbar-menu{position:relative;flex:0 0 auto}
+.menu-toggle{display:none;padding:6px 9px;border:1px solid var(--line);border-radius:7px;color:var(--ink);background:var(--panel2);font-size:18px;line-height:1;cursor:pointer}
 .toolbar-menu summary{list-style:none;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;padding:6px 8px;border-left:1px solid var(--line)}
 .toolbar-menu summary::-webkit-details-marker{display:none}
 .toolbar-menu summary::after{content:"▾";margin-left:5px;color:var(--accent2)}
@@ -71,6 +72,10 @@ button.primary:hover{background:transparent}
 .template-notice{display:none;align-items:center;gap:6px;color:var(--muted);font-size:11px;padding:3px 7px;border:1px solid var(--line);border-radius:6px}
 .template-notice.visible{display:inline-flex}
 .template-notice button{padding:2px 6px;font-size:11px}
+.update-notice{display:none;align-items:center;gap:6px;color:#ffe3a3;font-size:11px;padding:3px 7px;border:1px solid #8a6e36;border-radius:6px;white-space:nowrap}
+.update-notice.visible{display:inline-flex}
+.focus-exit{display:none;position:fixed;right:14px;top:14px;z-index:100;border:1px solid var(--line2);border-radius:7px;background:var(--panel);color:var(--ink);padding:7px 10px;cursor:pointer}
+body.focus-mode .focus-exit{display:block}
 
 /* ================= layout ================= */
 main{flex:1;display:flex;min-height:0;background:var(--bg2)}
@@ -226,6 +231,20 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
 body.focus-mode header{display:none}
 body.focus-mode #previewPane{display:none}
 body.focus-mode #editorPane{flex:1;border-right:0}
+@media (max-width:700px){
+  header{flex-wrap:wrap;padding:6px 8px}
+  .menu-toggle{display:block}
+  .toolbar-primary{display:none;order:3;width:100%;padding:4px 0 0}
+  .toolbar-primary input[type=text]{flex:1;min-width:0;width:auto}
+  header.menu-open .toolbar-primary{display:flex}
+  header .toolbar-menu{display:none;order:4}
+  header.menu-open .toolbar-menu{display:block}
+  header.menu-open .toolbar-menu .toolbar-group{position:fixed;top:49px;left:8px;right:8px;min-width:0;max-height:calc(100vh - 65px);overflow:auto}
+  header.menu-open .toolbar-menu summary{border-left:0;padding:8px 4px}
+  header.menu-open .toolbar-menu[open] .toolbar-group{position:fixed}
+  .spacer{display:none}
+  .status{margin-left:auto;max-width:42vw;overflow:hidden;text-overflow:ellipsis}
+}
 .stats{color:var(--muted);font-size:11px;white-space:nowrap;padding:0 4px}
 .dirty{color:#ffd166}
 .saved{color:#9be7a5}
@@ -235,13 +254,17 @@ body.focus-mode #editorPane{flex:1;border-right:0}
 
 <header>
   <div class="brand">HIISCRIPT <span>offline</span></div>
+  <button id="menuToggle" class="menu-toggle" type="button" aria-label="Open main menu" aria-expanded="false">☰</button>
   <span id="templateNotice" class="template-notice">Starter template — edit it or create a new script <button id="dismissTemplate" type="button">Dismiss</button></span>
+  <span id="updateNotice" class="update-notice" role="status"></span>
   <div class="toolbar-primary" aria-label="Quick actions">
     <input type="text" id="docTitle" placeholder="Untitled" autocomplete="off" spellcheck="false" aria-label="Project name">
     <button id="quickUndo" type="button" title="Undo (Ctrl/Cmd+Z)" aria-label="Undo">Undo</button>
     <button id="quickRedo" type="button" title="Redo (Ctrl/Cmd+Shift+Z)" aria-label="Redo">Redo</button>
-    <button id="quickSave" type="button" title="Save draft">Save</button>
-    <button id="quickExport" type="button" title="Export .fountain">Export</button>
+    <select id="saveFormat" title="Save format" aria-label="Save format"><option value="fountain">Save Fountain</option><option value="markdown">Save Markdown</option><option value="json">Save project backup</option></select>
+    <button id="quickSave" type="button" title="Save in the selected format">Save</button>
+    <select id="exportFormat" title="Export format" aria-label="Export format"><option value="fountain">Fountain</option><option value="markdown">Markdown</option><option value="pdf">PDF</option></select>
+    <button id="quickExport" type="button" title="Export in the selected format">Export</button>
   </div>
   <details class="toolbar-menu">
     <summary>File</summary>
@@ -249,11 +272,12 @@ body.focus-mode #editorPane{flex:1;border-right:0}
     <select id="docSelect" title="Your scripts"></select>
     <button id="btnNew" title="New script">+ New</button>
     <button id="btnNewTemplate" title="Create a new script from the starter template">New from template</button>
-    <button id="btnImport" class="primary" title="Import .pdf .fountain .txt .fdx">Import</button>
-    <button id="btnExport" title="Export .fountain">Fountain</button>
-    <button id="btnExportMarkdown" title="Export Markdown">Markdown</button>
-    <button id="btnOpen" title="Open a saved draft">Open</button>
-    <button id="btnSave" title="Save a draft file">Save</button>
+    <select id="importFormat" title="Import file type" aria-label="Import file type"><option value="any">Choose import type</option><option value="fountain">Fountain / text</option><option value="fdx">Final Draft (.fdx)</option><option value="pdf">PDF</option><option value="json">Project backup (.json)</option></select>
+    <button id="btnImport" class="primary" title="Import the selected file type">Import</button>
+    <select id="menuExportFormat" title="Export file type" aria-label="Export file type"><option value="fountain">Fountain</option><option value="markdown">Markdown</option><option value="pdf">PDF</option></select>
+    <button id="btnExport" title="Export the selected file type">Export</button>
+    <button id="btnOpen" title="Open a project backup">Open backup</button>
+    <button id="btnSave" title="Save in the selected format">Save</button>
     </div>
   </details>
   <details class="toolbar-menu">
@@ -304,8 +328,10 @@ body.focus-mode #editorPane{flex:1;border-right:0}
   <span class="status" id="status" role="status" aria-live="polite"></span>
   <span class="stats" id="stats" aria-live="polite"></span>
   <input type="file" id="fileInput" accept=".pdf,.fountain,.txt,.spmd,.md,.fdx,.xml" hidden>
-  <input type="file" id="draftInput" accept=".json" hidden>
+  <input type="file" id="draftInput" accept=".json,.fountain,.txt,.md" hidden>
 </header>
+
+<button id="focusExit" class="focus-exit" type="button">Escape focus mode</button>
 
 <main id="main" data-layout="split">
   <section id="editorPane">
@@ -442,6 +468,8 @@ const statusEl    = $("#status");
 const mainEl      = $("#main");
 const autoBox     = $("#autoBox");
 const templateNotice = $("#templateNotice");
+const updateNotice = $("#updateNotice");
+const headerEl = document.querySelector("header");
 const statsEl      = $("#stats");
 const RECOVERY_KEY = "kabrownie.screen.recovery.v1";
 const MAX_DRAFT_BYTES = 10 * 1024 * 1024;
@@ -942,17 +970,23 @@ function draftJson(){
     updated:d.updated}, null, 2);
 }
 
-async function saveDraftFile(){
-  const content = draftJson();
-  if(window.screenBridge && window.screenBridge.save){
-    const result = await window.screenBridge.save(content);
-    if(!result.cancelled) setStatus("Draft saved");
-    return;
-  }
+async function saveDraftFile(format = $("#saveFormat").value){
+  flush();
   const d = activeDoc();
   const safe = (d.title || "screenplay").replace(/[^\w\-. ]+/g, "").trim() || "screenplay";
-  download(safe + ".json", content, "application/json;charset=utf-8");
-  setStatus("Draft downloaded");
+  const files = {
+    fountain: {name: safe + ".fountain", content: d.text, mime: "text/plain;charset=utf-8"},
+    markdown: {name: safe + ".md", content: ScreenplayCore.fountainToMarkdown(d.text), mime: "text/markdown;charset=utf-8"},
+    json: {name: safe + ".json", content: draftJson(), mime: "application/json;charset=utf-8"}
+  };
+  const file = files[format] || files.fountain;
+  if(window.screenBridge && window.screenBridge.save){
+    const result = await window.screenBridge.save(file.content, {name: file.name, extension: format, filterName: format === "json" ? "Project backup" : format === "markdown" ? "Markdown screenplay" : "Fountain screenplay"});
+    if(!result.cancelled) setStatus("Saved " + file.name);
+    return;
+  }
+  download(file.name, file.content, file.mime);
+  setStatus("Downloaded " + file.name);
 }
 
 function loadDraftContent(content){
@@ -987,7 +1021,10 @@ function loadDraftContent(content){
 async function openDraftFile(){
   if(window.screenBridge && window.screenBridge.open){
     const result = await window.screenBridge.open();
-    if(!result.cancelled) loadDraftContent(result.content);
+    if(!result.cancelled){
+      if(result.extension === "json") loadDraftContent(result.content);
+      else loadPlainContent(result.content, result.filePath || "Imported");
+    }
     return;
   }
   $("#draftInput").click();
@@ -1622,19 +1659,21 @@ function replaceAll(){
 
 function importPlain(file){
   const reader = new FileReader();
-  reader.onload = () => {
+  reader.onload = () => loadPlainContent(String(reader.result || ""), file.name);
+  reader.readAsText(file);
+}
+
+function loadPlainContent(content, filename){
     flush();
-    const base = file.name.replace(/\.[^.]+$/, "");
+    const base = String(filename).split(/[\\/]/).pop().replace(/\.[^.]+$/, "");
     const d = makeDoc(base || "Imported");
-    d.text = String(reader.result || "");
+    d.text = content;
     store.docs.push(d);
     store.active = d.id;
     titleInput.value = d.title;
     loadIntoEditor(d.text);
     persist(); refreshDocList(); render();
-    setStatus("Imported " + file.name);
-  };
-  reader.readAsText(file);
+    setStatus("Imported " + (base || "file"));
 }
 
 /* ---- Final Draft .fdx ---- */
@@ -1696,10 +1735,7 @@ function loadPdfJs(){
   if(window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
   if(pdfJsPromise) return pdfJsPromise;
   pdfJsPromise = new Promise((resolve, reject) => {
-    const urls = [
-      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js",
-      "https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js"
-    ];
+    const urls = ["vendor/pdf.min.js"];
     let idx = 0;
     (function tryNext(){
       if(idx >= urls.length){ reject(new Error("pdf.js unavailable")); return; }
@@ -1708,8 +1744,7 @@ function loadPdfJs(){
       s.src = url;
       s.onload = () => {
         if(window.pdfjsLib){
-          window.pdfjsLib.GlobalWorkerOptions.workerSrc =
-            url.replace("pdf.min.js","pdf.worker.min.js");
+          window.pdfjsLib.GlobalWorkerOptions.workerSrc = "vendor/pdf.worker.min.js";
           resolve(window.pdfjsLib);
         } else tryNext();
       };
@@ -1776,8 +1811,8 @@ async function importPdf(file){
     setStatus("Imported PDF ✓");
   }catch(err){
     console.error(err);
-    setStatus("⚠ PDF import needs internet the first time");
-    alert("PDF import could not run.\n\nIt downloads a small PDF-reading library from the internet the first time you use it. After that it works offline.\n\nTip: you can also copy text from the PDF and paste it into the editor — it will be auto-formatted.");
+    setStatus("⚠ Could not read PDF offline");
+    alert("PDF import could not read this file. Try exporting the PDF again or use Fountain/text import.");
   }
 }
 
@@ -2109,36 +2144,40 @@ document.querySelectorAll("[data-layout]").forEach(btn => {
   });
 });
 
-$("#btnExport").addEventListener("click", () => {
+function exportCurrent(format){
   flush();
   const d = activeDoc();
   const safe = (d.title || "screenplay").replace(/[^\w\-. ]+/g, "").trim() || "screenplay";
-  download(safe + ".fountain", d.text, "text/plain;charset=utf-8");
-});
+  if(format === "pdf"){
+    const previous = mainEl.dataset.layout;
+    mainEl.dataset.layout = "preview";
+    render();
+    setTimeout(() => { window.print(); mainEl.dataset.layout = previous; }, 80);
+    return;
+  }
+  if(format === "markdown") download(safe + ".md", ScreenplayCore.fountainToMarkdown(d.text), "text/markdown;charset=utf-8");
+  else download(safe + ".fountain", d.text, "text/plain;charset=utf-8");
+  setStatus("Exported " + (format === "markdown" ? ".md" : ".fountain"));
+}
 
-$("#btnExportMarkdown").addEventListener("click", () => {
-  flush();
-  const d = activeDoc();
-  const safe = (d.title || "screenplay").replace(/[^\w\-. ]+/g, "").trim() || "screenplay";
-  download(safe + ".md", ScreenplayCore.fountainToMarkdown(d.text), "text/markdown;charset=utf-8");
-});
+$("#btnExport").addEventListener("click", () => exportCurrent($("#menuExportFormat").value));
 
 $("#btnUndo").addEventListener("click", undo);
 $("#btnRedo").addEventListener("click", redo);
 $("#quickUndo").addEventListener("click", undo);
 $("#quickRedo").addEventListener("click", redo);
-$("#quickSave").addEventListener("click", () => saveDraftFile().catch(() => setStatus("Could not save draft")));
-$("#quickExport").addEventListener("click", () => {
-  flush();
-  const d = activeDoc();
-  const safe = (d.title || "screenplay").replace(/[^\w\-. ]+/g, "").trim() || "screenplay";
-  download(safe + ".fountain", d.text, "text/plain;charset=utf-8");
-});
+$("#quickSave").addEventListener("click", () => saveDraftFile().catch(() => setStatus("Could not save file")));
+$("#quickExport").addEventListener("click", () => exportCurrent($("#exportFormat").value));
 $("#btnScenes").addEventListener("click", () => {
   renderSceneNavigator();
   $("#sceneNav").classList.toggle("open");
 });
-$("#btnFocus").addEventListener("click", () => document.body.classList.toggle("focus-mode"));
+function setFocusMode(enabled){
+  document.body.classList.toggle("focus-mode", enabled);
+  if(!enabled) editorEl.focus();
+}
+$("#btnFocus").addEventListener("click", () => setFocusMode(!document.body.classList.contains("focus-mode")));
+$("#focusExit").addEventListener("click", () => setFocusMode(false));
 $("#btnFind").addEventListener("click", () => { $("#findModal").classList.add("open"); ScreenplayAccessibility.openModal($("#findModal"), $("#btnFind")); });
 $("#closeFind").addEventListener("click", () => ScreenplayAccessibility.closeModal($("#findModal")));
 $("#findModal").addEventListener("click", e => { if(e.target.id === "findModal") ScreenplayAccessibility.closeModal($("#findModal")); });
@@ -2146,7 +2185,7 @@ $("#findNext").addEventListener("click", () => setStatus(replaceSelection(findTe
 $("#replaceOne").addEventListener("click", () => setStatus(replaceSelection($("#replaceText").value) ? "Replaced" : "Text not found"));
 $("#replaceAll").addEventListener("click", replaceAll);
 
-$("#btnSave").addEventListener("click", () => saveDraftFile().catch(() => setStatus("Could not save draft")));
+$("#btnSave").addEventListener("click", () => saveDraftFile().catch(() => setStatus("Could not save file")));
 $("#btnOpen").addEventListener("click", () => openDraftFile().catch(() => setStatus("Could not open draft")));
 $("#draftInput").addEventListener("change", (e) => {
   const file = e.target.files && e.target.files[0];
@@ -2160,22 +2199,30 @@ $("#draftInput").addEventListener("change", (e) => {
   e.target.value = "";
 });
 
+const importAccept = {any:".pdf,.fountain,.txt,.spmd,.md,.fdx,.xml,.json", fountain:".fountain,.txt,.spmd,.md", fdx:".fdx,.xml", pdf:".pdf", json:".json"};
+$("#importFormat").addEventListener("change", e => $("#fileInput").accept = importAccept[e.target.value] || importAccept.any);
 $("#btnImport").addEventListener("click", () => $("#fileInput").click());
 $("#fileInput").addEventListener("change", (e) => {
   const f = e.target.files && e.target.files[0];
-  if(f) handleImportFile(f);
+  if(f){
+    if(f.name.toLowerCase().endsWith(".json")){
+      const reader = new FileReader();
+      reader.onload = () => { try{ loadDraftContent(String(reader.result || "")); } catch(err){ setStatus("Invalid project backup"); } };
+      reader.readAsText(f);
+    } else handleImportFile(f);
+  }
   e.target.value = "";
 });
 
-$("#btnPrint").addEventListener("click", () => {
-  flush();
-  const prev = mainEl.dataset.layout;
-  mainEl.dataset.layout = "preview";
-  render();
-  setTimeout(() => {
-    window.print();
-    mainEl.dataset.layout = prev;
-  }, 80);
+$("#exportFormat").addEventListener("change", e => { $("#menuExportFormat").value = e.target.value; });
+$("#menuExportFormat").addEventListener("change", e => { $("#exportFormat").value = e.target.value; });
+
+$("#btnPrint").addEventListener("click", () => exportCurrent("pdf"));
+
+$("#menuToggle").addEventListener("click", () => {
+  const open = !headerEl.classList.contains("menu-open");
+  headerEl.classList.toggle("menu-open", open);
+  $("#menuToggle").setAttribute("aria-expanded", String(open));
 });
 
 $("#btnLaunchers").addEventListener("click", downloadLaunchers);
@@ -2202,6 +2249,7 @@ document.addEventListener("keydown", (e) => {
     return;
   }
   if(e.key === "Escape"){
+    if(document.body.classList.contains("focus-mode")){ setFocusMode(false); return; }
     ScreenplayAccessibility.closeModal($("#modal"));
     ScreenplayAccessibility.closeModal($("#aboutModal"));
     ScreenplayAccessibility.closeModal($("#findModal"));
@@ -2210,6 +2258,23 @@ document.addEventListener("keydown", (e) => {
     document.querySelectorAll(".toolbar-menu").forEach(menu => menu.removeAttribute("open"));
   }
 });
+
+async function checkForUpdates(){
+  const key = "kabrownie.screen.update-check";
+  const last = Number(localStorage.getItem(key) || 0);
+  if(Date.now() - last < 6 * 60 * 60 * 1000) return;
+  localStorage.setItem(key, String(Date.now()));
+  try{
+    const response = await fetch("https://api.github.com/repos/kabrownie/HiiScript/releases/latest", {headers:{Accept:"application/vnd.github+json"}});
+    if(!response.ok) return;
+    const release = await response.json();
+    const latest = String(release.tag_name || "").replace(/^v/i, "");
+    if(latest && latest !== "1.0.2"){
+      updateNotice.innerHTML = `Update ${esc(latest)} available <a href="${esc(release.html_url || "https://github.com/kabrownie/HiiScript/releases/latest")}" target="_blank" rel="noopener">View</a>`;
+      updateNotice.classList.add("visible");
+    }
+  }catch(err){ /* Updates are optional and must never interrupt offline writing. */ }
+}
 
 window.addEventListener("resize", () => { if(autoBox.classList.contains("open")) positionAuto(); });
 document.addEventListener("selectionchange", () => {
@@ -2254,6 +2319,7 @@ window.addEventListener("beforeunload", flush);
   } else {
     setSaveState(true);
   }
+  checkForUpdates();
 })();
 </script>
 </body>

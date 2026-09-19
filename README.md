@@ -22,7 +22,7 @@ The 1.0.10 release is the latest production packaging pass for desktop and Andro
 
 Hiiscript is offline-first. Scripts, settings, characters, and scene suggestions are stored locally on the user's device. The app has no accounts, advertising, analytics, tracking pixels, or background screenplay uploads. Draft files are written only when the user chooses **Save**.
 
-PDF import may download the open-source PDF.js library from a public CDN the first time it is used. The PDF is processed locally in the app; no screenplay upload service is used.
+PDF import uses the bundled open-source PDF.js reader and is processed locally in the app; no screenplay upload service or internet connection is required.
 
 ## Developer Quick Start
 
@@ -37,9 +37,9 @@ To preview the web editor without Electron:
 npm run web
 ```
 
-The Electron app stores drafts as JSON files through a secure preload bridge. The web preview keeps the editor usable, but file dialogs require Electron.
+The app saves Fountain files by default through a secure preload bridge. Project backups remain available as explicit JSON files, while the web preview downloads files directly.
 
-Use **Front page** to add title-page metadata, and **Page break** to insert a new screenplay page. Recovery snapshots are written to local browser storage while you edit; **Save** and **Open** use JSON draft files in Electron (or browser downloads/file selection on the web). **Fountain** and **Markdown** export create portable text files. The editor also includes undo/redo, find and replace, scene navigation, focus mode, word/page/runtime statistics, and drag-and-drop import.
+Use **Front page** to add title-page metadata, and **Page break** to insert a new screenplay page. Recovery snapshots are written to local browser storage while you edit; **Save** and **Open** support Fountain, Markdown, and explicit JSON project backups. **Export** supports Fountain, Markdown, and offline PDF printing. The editor also includes undo/redo, find and replace, scene navigation, focus mode with Escape exit, word/page/runtime statistics, update notifications, and drag-and-drop import.
 
 On first launch, Hiiscript opens **The Last Signal**, a clearly labeled superhero starter template. Create a new script or dismiss the notice when you are ready to begin your own screenplay.
 

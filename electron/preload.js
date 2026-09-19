@@ -1,6 +1,6 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('screenBridge', {
-  save: (content) => ipcRenderer.invoke('draft:save', content),
+  save: (content, options) => ipcRenderer.invoke('draft:save', content, options),
   open: () => ipcRenderer.invoke('draft:open')
 });
