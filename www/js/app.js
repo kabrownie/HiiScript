@@ -1831,20 +1831,16 @@ window.addEventListener("beforeunload", flush);
 
 /* ================= boot ================= */
 
-(function init(){
-  const d = activeDoc();
-  titleInput.value = d.title;
-  loadIntoEditor(d.text);
-  const recovery = recoverySnapshot();
-  let recovered = false;
-  if(recovery && recovery.text !== d.text && confirm(`Recover unsaved changes from ${new Date(recovery.updated).toLocaleString()}?`)){
-    titleInput.value = recovery.title;
-    loadIntoEditor(recovery.text);
-    recovered = true;
-    setStatus("Recovered unsaved work");
-  } else {
-    clearRecoverySnapshot();
-  }
+function applyRecovery(recovery){
+  titleInput.value = recovery.title;
+  loadIntoEditor(recovery.text);
+  setStatus("Recovered unsaved work");
+  dirty = true;
+  setSaveState(false);
+  writeRecoverySnapshot();
+}
+
+function finishInit(recovered){
   refreshDocList();
   render();
   persist();
@@ -1856,12 +1852,52 @@ window.addEventListener("beforeunload", flush);
   history = [{text: serialize(), title: titleInput.value}];
   historyIndex = 0;
   updateHistoryButtons();
-  if(recovered){
-    dirty = true;
-    setSaveState(false);
-    writeRecoverySnapshot();
-  } else {
+  if(!recovered){
     setSaveState(true);
   }
   checkForUpdates();
+}
+
+function promptRecovery(recovery){
+  const modal = $("#recoveryModal");
+  const info  = $("#recoveryInfo");
+  const restoreBtn = $("#recoveryRestore");
+  const discardBtn = $("#recoveryDiscard");
+
+  info.textContent = `Snapshot taken ${new Date(recovery.updated).toLocaleString()}.`;
+
+  const onRestore = () => close(true);
+  const onDiscard = () => close(false);
+
+  function close(restore){
+    modal.classList.remove("open");
+    restoreBtn.removeEventListener("click", onRestore);
+    discardBtn.removeEventListener("click", onDiscard);
+    if(restore){
+      applyRecovery(recovery);
+      finishInit(true);
+    } else {
+      clearRecoverySnapshot();
+      finishInit(false);
+    }
+  }
+
+  restoreBtn.addEventListener("click", onRestore);
+  discardBtn.addEventListener("click", onDiscard);
+  modal.classList.add("open");
+  ScreenplayAccessibility.openModal(modal, restoreBtn);
+}
+
+(function init(){
+  const d = activeDoc();
+  titleInput.value = d.title;
+  loadIntoEditor(d.text);
+
+  const recovery = recoverySnapshot();
+  if(!recovery || recovery.text === d.text){
+    clearRecoverySnapshot();
+    finishInit(false);
+    return;
+  }
+  promptRecovery(recovery);
 })();

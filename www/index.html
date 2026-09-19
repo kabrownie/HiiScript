@@ -451,7 +451,17 @@ body.focus-mode #editorPane{flex:1;border-right:0}
     <button class="close primary" id="closeAbout">Close</button>
   </div>
 </div>
-
+<div class="modal" id="recoveryModal">
+  <div class="box">
+    <h2>Recover unsaved work?</h2>
+    <p id="recoveryInfo"></p>
+    <p>A recovery snapshot from your last session was found. Would you like to restore it?</p>
+    <div class="row">
+      <button id="recoveryDiscard">Discard snapshot</button>
+      <button class="close primary" id="recoveryRestore">Restore</button>
+    </div>
+  </div>
+</div>
 <script src="js/screenplay-core.js"></script>
 <script src="js/accessibility.js"></script>
 <script src="js/app.js"></script>
