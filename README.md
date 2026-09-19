@@ -14,9 +14,8 @@ Support continued development: [Sponsor Hiiscript on GitHub](https://github.com/
 
 **Release page:** [GitHub Releases](https://github.com/kabrownie/Hiiscript/releases/latest)
 
-## Release 1.0.10
-
-The 1.0.10 release is the latest production packaging pass for desktop and Android builds. It targets the same offline screenplay workflow, with the release pipeline configured for Linux, Windows, and Android artifact generation.
+## Release 1.0.11
+The 1.0.11  the latest production packaging pass for desktop and Android builds. It targets the same offline screenplay workflow, with the release pipeline configured for Linux, Windows, and Android artifact generation.
 
 ## Privacy
 
@@ -90,8 +89,8 @@ npm run build:linux
 
 Builds are written to `dist/`:
 
-- `hiiscript-1.0.2-x86_64.AppImage` runs without installation.
-- `hiiscript-1.0.2-amd64.deb` installs with `sudo dpkg -i`.
+- `hiiscript-1.0.11-x86_64.AppImage` runs without installation.
+- `hiiscript-1.0.11-amd64.deb` installs with `sudo dpkg -i`.
 
 ### Build Windows packages
 

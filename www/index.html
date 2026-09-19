@@ -434,6 +434,7 @@ body.focus-mode #editorPane{flex:1;border-right:0}
   <div class="box about-box">
     <img class="about-logo" src="../images/hiiscreen.png" alt="Hiiscript">
     <h2>Hiiscript</h2>
+    <p><strong>Version {APP_VERSION}</strong></p>
     <p><strong>Created by <a href="https://kabrownie.digital" target="_blank" rel="noreferrer">Kabrownie Digital</a>.</strong></p>
     <p>Hiiscript is an offline-first screenplay writer for Fountain scripts. It is designed to keep writing, drafts, and exports under the writer's control.</p>
 
@@ -455,6 +456,7 @@ body.focus-mode #editorPane{flex:1;border-right:0}
 <script src="js/accessibility.js"></script>
 <script>
 "use strict";
+const APP_VERSION = "1.0.11";
 /* ============================================================
   Hiiscript — a single-file offline Fountain screenwriter
    ============================================================ */
@@ -2269,8 +2271,7 @@ async function checkForUpdates(){
     if(!response.ok) return;
     const release = await response.json();
     const latest = String(release.tag_name || "").replace(/^v/i, "");
-    if(latest && latest !== "1.0.2"){
-      updateNotice.innerHTML = `Update ${esc(latest)} available <a href="${esc(release.html_url || "https://github.com/kabrownie/HiiScript/releases/latest")}" target="_blank" rel="noopener">View</a>`;
+    if(latest && latest !== APP_VERSION){      updateNotice.innerHTML = `Update ${esc(latest)} available <a href="${esc(release.html_url || "https://github.com/kabrownie/HiiScript/releases/latest")}" target="_blank" rel="noopener">View</a>`;
       updateNotice.classList.add("visible");
     }
   }catch(err){ /* Updates are optional and must never interrupt offline writing. */ }
