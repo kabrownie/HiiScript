@@ -6,7 +6,7 @@ Created by [Kabrownie Digital](https://kabrownie.digital).
 
 Hiiscript is open source software released under the [MIT License](LICENSE).
 
-**Project page:** [kabrownie.github.io/Hiiscript](https://kabrownie.github.io/Hiiscript)
+**Project page:** [kabrownie.github.io/Hiiscript](https://kabrownie.github.io/HiiScript)
 
 Support continued development: [Sponsor Hiiscript on GitHub](https://github.com/sponsors/kabrownie)
 
