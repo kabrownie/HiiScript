@@ -130,7 +130,8 @@ function defaultStore(){
     active: d.id,
     characters: ["NOVA", "VEX", "RADIO VOICE"],
     scenes: ["INT. CITY ROOFTOP - NIGHT"],
-    firstRun: true
+    firstRun: true,
+    updateChecks: false
   };
 }
 
@@ -1830,6 +1831,14 @@ $("#btnAbout").addEventListener("click", () => { $("#aboutModal").classList.add(
 $("#closeAbout").addEventListener("click", () => ScreenplayAccessibility.closeModal($("#aboutModal")));
 $("#aboutModal").addEventListener("click", (e) => { if(e.target.id === "aboutModal") ScreenplayAccessibility.closeModal($("#aboutModal")); });
 
+const updateToggle = $("#updateChecksToggle");
+updateToggle.checked = !!store.updateChecks;
+updateToggle.addEventListener("change", () => {
+  store.updateChecks = updateToggle.checked;
+  persist();
+  if(store.updateChecks) checkForUpdates();
+});
+
 document.querySelectorAll(".toolbar-menu").forEach(menu => {
   menu.addEventListener("mouseleave", () => menu.removeAttribute("open"));
 });
@@ -1857,19 +1866,33 @@ document.addEventListener("keydown", (e) => {
 });
 
 async function checkForUpdates(){
+  if(!store.updateChecks) return;
+
   const key = "kabrownie.screen.update-check";
   const last = Number(localStorage.getItem(key) || 0);
   if(Date.now() - last < 6 * 60 * 60 * 1000) return;
   localStorage.setItem(key, String(Date.now()));
+
   try{
-    const response = await fetch("https://api.github.com/repos/kabrownie/HiiScript/releases/latest", {headers:{Accept:"application/vnd.github+json"}});
+    const response = await fetch(
+      "https://api.github.com/repos/kabrownie/HiiScript/releases/latest",
+      { headers: { Accept: "application/vnd.github+json" } }
+    );
     if(!response.ok) return;
+
     const release = await response.json();
     const latest = String(release.tag_name || "").replace(/^v/i, "");
-    if(latest && latest !== APP_VERSION){      updateNotice.innerHTML = `Update ${esc(latest)} available <a href="${esc(release.html_url || "https://github.com/kabrownie/HiiScript/releases/latest")}" target="_blank" rel="noopener">View</a>`;
+
+    if(latest && ScreenplayCore.compareVersions(latest, APP_VERSION) > 0){
+      updateNotice.innerHTML =
+        `Update ${esc(latest)} available ` +
+        `<a href="${esc(release.html_url || "https://github.com/kabrownie/HiiScript/releases/latest")}" ` +
+        `target="_blank" rel="noopener">View</a>`;
       updateNotice.classList.add("visible");
     }
-  }catch(err){ /* Updates are optional and must never interrupt offline writing. */ }
+  }catch(err){
+    /* offline is fine — updates are optional and must never interrupt writing */
+  }
 }
 
 window.addEventListener("resize", () => { if(autoBox.classList.contains("open")) positionAuto(); });

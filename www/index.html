@@ -439,10 +439,17 @@ body.focus-mode #editorPane{flex:1;border-right:0}
     <p>Hiiscript is an offline-first screenplay writer for Fountain scripts. It is designed to keep writing, drafts, and exports under the writer's control.</p>
 
     <h3>Privacy policy</h3>
-    <p><strong>Your scripts stay on your device.</strong> The app stores recovery snapshots, drafts, settings, characters, and scene suggestions in local browser storage. Draft files are written only when you choose <b>Save</b>, and only to the location you select.</p>
-    <p>Hiiscript does not include accounts, advertising, analytics, tracking pixels, or background uploads. The app does not sell or share screenplay content.</p>
-    <p>PDF import may load the open-source PDF.js library from a public CDN the first time it is used. The PDF is processed in the app; no screenplay upload service is used. For fully offline use, import Fountain, text, or Final Draft files instead.</p>
-
+<p><strong>Your scripts stay on your device.</strong> The app stores recovery snapshots, drafts, settings, characters, and scene suggestions in local browser storage. Draft files are written only when you choose <b>Save</b>, and only to the location you select.</p>
+<p>Hiiscript does not include accounts, advertising, analytics, tracking pixels, or background uploads. Two exceptions, both opt-in or clearly disclosed:</p>
+<ul>
+  <li><b>Update checks</b> (opt-in). If enabled, the app requests the latest release tag from <code>api.github.com</code> at most once every six hours. This shares your IP address with GitHub; nothing else is sent.</li>
+  <li><b>PDF import</b> (first use only). The bundled PDF.js reader is used offline. If the bundled copy is missing, the app falls back to a public CDN for the reader script.</li>
+</ul>
+<h3>Preferences</h3>
+<label style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+  <input type="checkbox" id="updateChecksToggle">
+  <span>Check for updates automatically (sends an anonymous request to GitHub every 6 hours)</span>
+</label>
     <h3>Open source</h3>
     <p>The project is open source and may be inspected, modified, and self-hosted according to its license. Exported Fountain files remain plain text and portable.</p>
 

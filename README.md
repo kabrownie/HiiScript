@@ -23,6 +23,15 @@ Hiiscript is offline-first. Scripts, settings, characters, and scene suggestions
 
 PDF import uses the bundled open-source PDF.js reader and is processed locally in the app; no screenplay upload service or internet connection is required.
 
+Two network requests exist, both opt-in or disclosed:
+
+- **Update checks** (opt-in). If enabled in the About dialog, the app requests
+  the latest release tag from `api.github.com` at most once every six hours.
+  This shares your IP address with GitHub; nothing else is sent.
+- **PDF import** (first use only). The bundled PDF.js reader is used offline.
+  If the bundled copy is missing, the app falls back to a public CDN for the
+  reader script.
+
 ## Developer Quick Start
 
 ```bash
