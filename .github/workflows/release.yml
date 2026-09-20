@@ -36,16 +36,18 @@ jobs:
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
       - run: npm ci
       - run: npm run build:linux
-      - name: Create versioned download names
+      - name: Create download names (stable + versioned)
         run: |
+          cp dist/*.AppImage "dist/Hiiscript-latest-linux.AppImage"
           cp dist/*.AppImage "dist/hiiscript-linux-${VERSION}.AppImage"
+          cp dist/*.deb      "dist/Hiiscript-latest-linux.deb"
           cp dist/*.deb      "dist/hiiscript-linux-${VERSION}.deb"
       - uses: actions/upload-artifact@v4
         with:
           name: linux-builds
           path: |
-            dist/hiiscript-linux-*.AppImage
-            dist/hiiscript-linux-*.deb
+            dist/Hiiscript-latest-linux.*
+            dist/hiiscript-linux-v*.*
 
   build-windows:
     needs: test
@@ -77,17 +79,19 @@ jobs:
         env:
           CSC_LINK: ${{ secrets.WINDOWS_CERTIFICATE_BASE64 }}
           CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
-      - name: Create versioned download names
+      - name: Create download names (stable + versioned)
         shell: bash
         run: |
+          cp dist/*portable*.exe "dist/Hiiscript-latest-windows-portable.exe"
           cp dist/*portable*.exe "dist/hiiscript-windows-portable-${VERSION}.exe"
+          cp dist/*setup*.exe    "dist/Hiiscript-latest-windows-setup.exe"
           cp dist/*setup*.exe    "dist/hiiscript-windows-setup-${VERSION}.exe"
       - uses: actions/upload-artifact@v4
         with:
           name: windows-builds
           path: |
-            dist/hiiscript-windows-portable-*.exe
-            dist/hiiscript-windows-setup-*.exe
+            dist/Hiiscript-latest-windows-*.exe
+            dist/hiiscript-windows-*-v*.*.*
 
   build-android:
     needs: test
@@ -112,14 +116,18 @@ jobs:
       - run: npm ci
       - run: npm run android:add
       - run: npm run android:build
-      - name: Create versioned download name
+      - name: Create download names (stable + versioned)
         run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk \
+             "Hiiscript-latest-android.apk"
           cp android/app/build/outputs/apk/debug/app-debug.apk \
              "hiiscript-android-${VERSION}.apk"
       - uses: actions/upload-artifact@v4
         with:
           name: android-builds
-          path: hiiscript-android-*.apk
+          path: |
+            Hiiscript-latest-android.apk
+            hiiscript-android-v*.*.*
 
   publish:
     if: startsWith(github.ref, 'refs/tags/v')
@@ -133,11 +141,18 @@ jobs:
       - name: Package release assets
         run: |
           mkdir publish
-          cp release/linux-builds/hiiscript-linux-*.AppImage publish/
-          cp release/linux-builds/hiiscript-linux-*.deb      publish/
-          cp release/windows-builds/hiiscript-windows-*.exe  publish/
-          cp release/android-builds/hiiscript-android-*.apk  publish/
-          test "$(find publish -maxdepth 1 -type f | wc -l)" -eq 5
+          cp release/linux-builds/Hiiscript-latest-linux.AppImage publish/
+          cp release/linux-builds/Hiiscript-latest-linux.deb      publish/
+          cp release/linux-builds/hiiscript-linux-v*.AppImage     publish/
+          cp release/linux-builds/hiiscript-linux-v*.deb          publish/
+          cp release/windows-builds/Hiiscript-latest-windows-portable.exe publish/
+          cp release/windows-builds/Hiiscript-latest-windows-setup.exe    publish/
+          cp release/windows-builds/hiiscript-windows-portable-v*.exe     publish/
+          cp release/windows-builds/hiiscript-windows-setup-v*.exe        publish/
+          cp release/android-builds/Hiiscript-latest-android.apk          publish/
+          cp release/android-builds/hiiscript-android-v*.apk              publish/
+          echo "Published assets:"
+          ls -la publish/
       - uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
