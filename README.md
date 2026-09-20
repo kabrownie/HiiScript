@@ -156,6 +156,13 @@ Keep `www/index.html` as the single source of truth. Electron reads it on every 
 - `images/` contains the Kabrownie logo, favicon, and desktop app icons used by packaged builds.
 - `capacitor.config.json` configures the shared web bundle for native targets.
 - `.vscode/` contains launch and task definitions for local development.
+`images/` is the canonical source. `www/images/` is a copy that must exist
+for the web preview and Android builds, which cannot reach above `www/`.
+After changing any file in `images/`, run:
+
+```bash
+npm run sync:images
+
 
 ## Performance
 
