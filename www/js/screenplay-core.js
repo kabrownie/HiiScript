@@ -19,7 +19,7 @@
   }
 
   function isCharacterName(value){
-    return /^[A-Z][A-Z0-9 .'-]{1,47}$/.test(String(value || "").trim());
+   return /^[A-Z][A-Z0-9 .'-]{1,41}$/.test(String(value || "").trim());
   }
 
   function isSceneHeading(value){

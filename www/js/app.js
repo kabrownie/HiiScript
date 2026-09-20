@@ -481,7 +481,7 @@ function render(){
 }
 
 function paginatePreview(){
-  const pages = Array.from(preview.children).filter(page => page.classList.contains("page"));
+ let pages = Array.from(preview.children).filter(page => page.classList.contains("page"));;
   for(let index = 0; index < pages.length; index++){
     const page = pages[index];
     if(page.querySelector(".titlepage")) continue;
@@ -491,6 +491,8 @@ function paginatePreview(){
         next = document.createElement("div");
         next.className = "page";
         page.parentNode.insertBefore(next, page.nextSibling);
+        pages = pages.slice();
+
         pages.splice(index + 1, 0, next);
       }
       next.prepend(page.lastElementChild);
