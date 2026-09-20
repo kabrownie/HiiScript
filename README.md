@@ -158,4 +158,7 @@ enable hardware acceleration:
 ```bash
 HIISCRIPT_FORCE_GPU=1 ./hiiscript-1.0.11-x86_64.AppImage
 
+HIISCRIPT_DISABLE_GPU=1 Hiiscript.exe
+```
+
 Shared screenplay rules live in `www/js/screenplay-core.js`; accessibility helpers live in `www/js/accessibility.js`. The HTML file still owns the editor controller and markup, but reusable classification and data normalization are now testable outside the browser.
