@@ -474,28 +474,33 @@ function render(){
     }
   }
   if(pageBlocks.length || !pages.length) pages.push(pageBlocks);
-  let html = titlePage ? `<div class="page">${renderTitlePage(titlePage)}</div>` : "";
-  html += pages.map(page => `<div class="page">${page.map(renderBlock).join("")}</div>`).join("");
+  let html = titlePage ? `<div class="pageSheet"><div class="page">${renderTitlePage(titlePage)}</div></div>` : "";
+  html += pages.map(page => `<div class="pageSheet"><div class="page">${page.map(renderBlock).join("")}</div></div>`).join("");
   preview.innerHTML = html || `<div class="page"><p class="action" style="color:#c9a">Nothing yet — start typing.</p></div>`;
   requestAnimationFrame(paginatePreview);
 }
 
 function paginatePreview(){
- let pages = Array.from(preview.children).filter(page => page.classList.contains("page"));;
-  for(let index = 0; index < pages.length; index++){
-    const page = pages[index];
+  let sheets = Array.from(preview.children).filter(el => el.classList.contains("pageSheet"));
+  for(let index = 0; index < sheets.length; index++){
+    const sheet = sheets[index];
+    const page = sheet.querySelector(".page");
+    if(!page) continue;
     if(page.querySelector(".titlepage")) continue;
-    while(page.scrollHeight > page.clientHeight + 1 && page.children.length > 1){
-      let next = pages[index + 1];
-      if(!next){
-        next = document.createElement("div");
-        next.className = "page";
-        page.parentNode.insertBefore(next, page.nextSibling);
-        pages = pages.slice();
-
-        pages.splice(index + 1, 0, next);
+    while(page.scrollHeight > sheet.clientHeight + 1 && page.children.length > 1){
+      let nextSheet = sheets[index + 1];
+      if(!nextSheet){
+        nextSheet = document.createElement("div");
+        nextSheet.className = "pageSheet";
+        const nextPage = document.createElement("div");
+        nextPage.className = "page";
+        nextSheet.append(nextPage);
+        sheet.parentNode.insertBefore(nextSheet, sheet.nextSibling);
+        sheets = sheets.slice();
+        sheets.splice(index + 1, 0, nextSheet);
       }
-      next.prepend(page.lastElementChild);
+      const nextPage = nextSheet.querySelector(".page");
+      nextPage.prepend(page.lastElementChild);
     }
   }
 }
