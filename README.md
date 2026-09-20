@@ -148,4 +148,14 @@ Keep `www/index.html` as the single source of truth. Electron reads it on every 
 - `capacitor.config.json` configures the shared web bundle for native targets.
 - `.vscode/` contains launch and task definitions for local development.
 
+## Performance
+
+On Linux, Hiiscript disables GPU acceleration by default because a subset of
+legacy and unstable drivers crash the renderer before the first paint. If your
+system has working drivers, set `HIISCRIPT_FORCE_GPU=1` before launching to
+enable hardware acceleration:
+
+```bash
+HIISCRIPT_FORCE_GPU=1 ./hiiscript-1.0.11-x86_64.AppImage
+
 Shared screenplay rules live in `www/js/screenplay-core.js`; accessibility helpers live in `www/js/accessibility.js`. The HTML file still owns the editor controller and markup, but reusable classification and data normalization are now testable outside the browser.
