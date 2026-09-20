@@ -16,7 +16,6 @@ const templateNotice = $("#templateNotice");
 const updateNotice = $("#updateNotice");
 const headerEl = document.querySelector("header");
 const statsEl      = $("#stats");
-const RECOVERY_KEY = "kabrownie.screen.recovery.v1";
 const MAX_DRAFT_BYTES = 10 * 1024 * 1024;
 
 /* ================= utilities ================= */
@@ -42,7 +41,7 @@ const detectType = ScreenplayCore.detectType;
 
 /* ================= store ================= */
 
-const KEY = "kabrownie.screen.v1";
+
 let saveTimer = null;
 let dirty = false;
 let history = [];
@@ -119,25 +118,71 @@ function makeDoc(title, text){
   return { id: uid(), title: title || "Untitled", text: text || "", updated: Date.now() };
 }
 
-function loadStore(){
-  try{
-    const raw = localStorage.getItem(KEY);
-    if(raw){
-      const s = JSON.parse(raw);
-      if(s && Array.isArray(s.docs) && s.docs.length){
-        return ScreenplayCore.normalizeLibrary(s);
-      }
-    }
-  }catch(e){ /* corrupted -> start fresh */ }
+const LEGACY_KEY = "kabrownie.screen.v1";
+const LEGACY_RECOVERY_KEY = "kabrownie.screen.recovery.v1";
+const STORE_KEY = "main";
+const RECOVERY_IDB_KEY = "recovery";
+
+function defaultStore(){
   const d = makeDoc("The Last Signal — Template", STARTER_TEMPLATE);
-  return { docs: [d], active: d.id, characters: ["NOVA", "VEX", "RADIO VOICE"], scenes: ["INT. CITY ROOFTOP - NIGHT"], firstRun: true };
+  return {
+    docs: [d],
+    active: d.id,
+    characters: ["NOVA", "VEX", "RADIO VOICE"],
+    scenes: ["INT. CITY ROOFTOP - NIGHT"],
+    firstRun: true
+  };
 }
 
-let store = loadStore();
+let store = defaultStore();
+let persistTimer = null;
+
+async function migrateFromLocalStorage(){
+  const legacy = localStorage.getItem(LEGACY_KEY);
+  const legacyRecovery = localStorage.getItem(LEGACY_RECOVERY_KEY);
+  if(legacy){
+    try{
+      await HiiscriptStorage.set(STORE_KEY, JSON.parse(legacy));
+      localStorage.removeItem(LEGACY_KEY);
+    }catch(e){ /* corrupted: leave it */ }
+  }
+  if(legacyRecovery){
+    try{
+      await HiiscriptStorage.set(RECOVERY_IDB_KEY, JSON.parse(legacyRecovery));
+      localStorage.removeItem(LEGACY_RECOVERY_KEY);
+    }catch(e){}
+  }
+}
+
+async function loadStore(){
+  await migrateFromLocalStorage();
+  const raw = await HiiscriptStorage.get(STORE_KEY);
+  if(raw && Array.isArray(raw.docs) && raw.docs.length){
+    store = ScreenplayCore.normalizeLibrary(raw);
+  } else {
+    store = defaultStore();
+    await HiiscriptStorage.set(STORE_KEY, store);
+  }
+}
 
 function persist(){
-  try{ localStorage.setItem(KEY, JSON.stringify(store)); }
-  catch(e){ setStatus("⚠ storage full — export a backup"); }
+  clearTimeout(persistTimer);
+  persistTimer = setTimeout(() => {
+    HiiscriptStorage.set(STORE_KEY, store).catch(e => {
+      console.error("persist failed", e);
+      setStatus("⚠ could not save — export a backup");
+    });
+  }, 250);
+}
+
+async function persistNow(){
+  clearTimeout(persistTimer);
+  try{
+    await HiiscriptStorage.set(STORE_KEY, store);
+  }catch(e){
+    console.error("persist failed", e);
+    setStatus("⚠ could not save — export a backup");
+  }
 }
 
 function setSaveState(saved){
@@ -147,30 +192,37 @@ function setSaveState(saved){
   statusEl.classList.toggle("dirty", !saved);
 }
 
-function writeRecoverySnapshot(){
+async function writeRecoverySnapshot(){
   const d = activeDoc();
   if(!d) return;
+  const text = serialize();
+  if(new TextEncoder().encode(text).length > MAX_DRAFT_BYTES) return;
   try{
-    localStorage.setItem(RECOVERY_KEY, JSON.stringify({
-      version: 1, id: d.id, title: titleInput.value.trim() || "Untitled",
-      text: serialize(), updated: Date.now()
-    }));
-  }catch(e){ setStatus("⚠ recovery storage full — export a backup"); }
+    await HiiscriptStorage.set(RECOVERY_IDB_KEY, {
+      version: 1,
+      id: d.id,
+      title: titleInput.value.trim() || "Untitled",
+      text,
+      updated: Date.now()
+    });
+  }catch(e){
+    console.error("recovery snapshot failed", e);
+  }
 }
 
-function clearRecoverySnapshot(){
-  try{ localStorage.removeItem(RECOVERY_KEY); }catch(e){}
+async function clearRecoverySnapshot(){
+  try{ await HiiscriptStorage.del(RECOVERY_IDB_KEY); }catch(e){}
 }
 
-function recoverySnapshot(){
+async function recoverySnapshot(){
   try{
-    const raw = localStorage.getItem(RECOVERY_KEY);
-    if(!raw) return null;
-    const value = JSON.parse(raw);
+    const value = await HiiscriptStorage.get(RECOVERY_IDB_KEY);
+    if(!value) return null;
     return ScreenplayCore.validateDraft(value, MAX_DRAFT_BYTES);
-  }catch(e){ clearRecoverySnapshot(); return null; }
+  }catch(e){
+    return null;
+  }
 }
-
 function activeDoc(){
   return store.docs.find(d => d.id === store.active) || store.docs[0];
 }
@@ -462,7 +514,7 @@ function flush(){
   d.updated = Date.now();
   rememberCharacters();
   rememberScenes();
-  persist();
+  persistNow();
   clearRecoverySnapshot();
   setSaveState(true);
 }
@@ -1827,7 +1879,7 @@ document.addEventListener("selectionchange", () => {
   if(!line) hideAuto();
 });
 
-window.addEventListener("beforeunload", flush);
+window.addEventListener("beforeunload", () => { flush(); });
 
 /* ================= boot ================= */
 
@@ -1888,14 +1940,16 @@ function promptRecovery(recovery){
   ScreenplayAccessibility.openModal(modal, restoreBtn);
 }
 
-(function init(){
+(async function init(){
+  await loadStore();
+
   const d = activeDoc();
   titleInput.value = d.title;
   loadIntoEditor(d.text);
 
-  const recovery = recoverySnapshot();
+  const recovery = await recoverySnapshot();
   if(!recovery || recovery.text === d.text){
-    clearRecoverySnapshot();
+    await clearRecoverySnapshot();
     finishInit(false);
     return;
   }
