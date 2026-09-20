@@ -13,8 +13,8 @@ jobs:
   test:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
@@ -25,105 +25,123 @@ jobs:
     needs: test
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
+      - name: Determine version
+        run: |
+          VERSION="v$(node -p "require('./package.json').version")"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
       - run: npm ci
       - run: npm run build:linux
-      - name: Create stable download names
+      - name: Create versioned download names
         run: |
-          cp dist/*.AppImage dist/Hiiscript-latest-linux.AppImage
-          cp dist/*.deb dist/Hiiscript-latest-linux.deb
-      - uses: actions/upload-artifact@v7
+          cp dist/*.AppImage "dist/hiiscript-linux-${VERSION}.AppImage"
+          cp dist/*.deb      "dist/hiiscript-linux-${VERSION}.deb"
+      - uses: actions/upload-artifact@v4
         with:
           name: linux-builds
           path: |
-            dist/Hiiscript-latest-linux.AppImage
-            dist/Hiiscript-latest-linux.deb
+            dist/hiiscript-linux-*.AppImage
+            dist/hiiscript-linux-*.deb
 
   build-windows:
     needs: test
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
+      - name: Determine version
+        shell: bash
+        run: |
+          VERSION="v$(node -p "require('./package.json').version")"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
       - name: Configure code signing
         shell: bash
         env:
           CSC_LINK: ${{ secrets.WINDOWS_CERTIFICATE_BASE64 }}
           CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
         run: |
-          if [[ -n "$CSC_LINK" ]]; then echo "Code signing credentials provided"; else echo "Unsigned build: configure WINDOWS_CERTIFICATE_BASE64 and WINDOWS_CERTIFICATE_PASSWORD for trusted Windows releases"; fi
+          if [[ -n "$CSC_LINK" ]]; then
+            echo "Code signing credentials provided"
+          else
+            echo "Unsigned build: configure WINDOWS_CERTIFICATE_BASE64 and WINDOWS_CERTIFICATE_PASSWORD for trusted Windows releases"
+          fi
+      - run: npm ci
       - run: npm run build:win
         env:
           CSC_LINK: ${{ secrets.WINDOWS_CERTIFICATE_BASE64 }}
           CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
-      - name: Create stable download names
+      - name: Create versioned download names
         shell: bash
         run: |
-          cp dist/*portable*.exe dist/Hiiscript-latest-windows-portable.exe
-          cp dist/*setup*.exe dist/Hiiscript-latest-windows-setup.exe
-      - uses: actions/upload-artifact@v7
+          cp dist/*portable*.exe "dist/hiiscript-windows-portable-${VERSION}.exe"
+          cp dist/*setup*.exe    "dist/hiiscript-windows-setup-${VERSION}.exe"
+      - uses: actions/upload-artifact@v4
         with:
           name: windows-builds
           path: |
-            dist/Hiiscript-latest-windows-portable.exe
-            dist/Hiiscript-latest-windows-setup.exe
+            dist/hiiscript-windows-portable-*.exe
+            dist/hiiscript-windows-setup-*.exe
 
   build-android:
     needs: test
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-      - uses: actions/setup-java@v6
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
-      - uses: android-actions/setup-android@v4
+      - uses: android-actions/setup-android@v3
         with:
           packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
+      - name: Determine version
+        run: |
+          VERSION="v$(node -p "require('./package.json').version")"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
       - run: npm ci
       - run: npm run android:add
       - run: npm run android:build
-      - name: Create stable download name
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk Hiiscript-latest-android.apk
-      - uses: actions/upload-artifact@v7
+      - name: Create versioned download name
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk \
+             "hiiscript-android-${VERSION}.apk"
+      - uses: actions/upload-artifact@v4
         with:
           name: android-builds
-          path: Hiiscript-latest-android.apk
+          path: hiiscript-android-*.apk
 
   publish:
     if: startsWith(github.ref, 'refs/tags/v')
     needs: [build-linux, build-windows, build-android]
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/download-artifact@v8
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
         with:
           path: release
       - name: Package release assets
         run: |
           mkdir publish
-          cp release/linux-builds/Hiiscript-latest-linux.AppImage publish/
-          cp release/linux-builds/Hiiscript-latest-linux.deb publish/
-          cp release/windows-builds/Hiiscript-latest-windows-portable.exe publish/
-          cp release/windows-builds/Hiiscript-latest-windows-setup.exe publish/
-          cp release/android-builds/Hiiscript-latest-android.apk publish/
+          cp release/linux-builds/hiiscript-linux-*.AppImage publish/
+          cp release/linux-builds/hiiscript-linux-*.deb      publish/
+          cp release/windows-builds/hiiscript-windows-*.exe  publish/
+          cp release/android-builds/hiiscript-android-*.apk  publish/
           test "$(find publish -maxdepth 1 -type f | wc -l)" -eq 5
       - uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
-          body_path: docs/releases/1.0.2.md
+          body_path: 1.0.11.md
           files: publish/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
