@@ -38,10 +38,25 @@ jobs:
       - run: npm run build:linux
       - name: Create download names (stable + versioned)
         run: |
-          cp dist/*.AppImage "dist/Hiiscript-latest-linux.AppImage"
-          cp dist/*.AppImage "dist/hiiscript-linux-${VERSION}.AppImage"
-          cp dist/*.deb      "dist/Hiiscript-latest-linux.deb"
-          cp dist/*.deb      "dist/hiiscript-linux-${VERSION}.deb"
+          set -euo pipefail
+          pick() {
+            local pattern="$1" label="$2"
+            local matches=( $pattern )
+            if [ ${#matches[@]} -ne 1 ]; then
+              echo "::error::Expected exactly one match for ${label}, got ${#matches[@]}: ${matches[*]}"
+              exit 1
+            fi
+            echo "${matches[0]}"
+          }
+          APPIMAGE="$(pick 'dist/*.AppImage' 'Linux AppImage')"
+          DEB="$(pick 'dist/*.deb' 'Linux .deb')"
+          cp "$APPIMAGE" "dist/Hiiscript-latest-linux.AppImage"
+          cp "$APPIMAGE" "dist/hiiscript-linux-${VERSION}.AppImage"
+          cp "$DEB"      "dist/Hiiscript-latest-linux.deb"
+          cp "$DEB"      "dist/hiiscript-linux-${VERSION}.deb"
+          ls -la dist/
+                - name: List dist contents
+        run: ls -la dist/ || ls -la
       - uses: actions/upload-artifact@v4
         with:
           name: linux-builds
@@ -82,10 +97,25 @@ jobs:
       - name: Create download names (stable + versioned)
         shell: bash
         run: |
-          cp dist/*portable*.exe "dist/Hiiscript-latest-windows-portable.exe"
-          cp dist/*portable*.exe "dist/hiiscript-windows-portable-${VERSION}.exe"
-          cp dist/*setup*.exe    "dist/Hiiscript-latest-windows-setup.exe"
-          cp dist/*setup*.exe    "dist/hiiscript-windows-setup-${VERSION}.exe"
+          set -euo pipefail
+          pick() {
+            local pattern="$1" label="$2"
+            local matches=( $pattern )
+            if [ ${#matches[@]} -ne 1 ]; then
+              echo "::error::Expected exactly one match for ${label}, got ${#matches[@]}: ${matches[*]}"
+              exit 1
+            fi
+            echo "${matches[0]}"
+          }
+          PORTABLE="$(pick 'dist/*portable*.exe' 'Windows portable')"
+          SETUP="$(pick 'dist/*setup*.exe' 'Windows installer')"
+          cp "$PORTABLE" "dist/Hiiscript-latest-windows-portable.exe"
+          cp "$PORTABLE" "dist/hiiscript-windows-portable-${VERSION}.exe"
+          cp "$SETUP"    "dist/Hiiscript-latest-windows-setup.exe"
+          cp "$SETUP"    "dist/hiiscript-windows-setup-${VERSION}.exe"
+          ls -la dist/
+                - name: List dist contents
+        run: ls -la dist/ || ls -la
       - uses: actions/upload-artifact@v4
         with:
           name: windows-builds
@@ -118,10 +148,17 @@ jobs:
       - run: npm run android:build
       - name: Create download names (stable + versioned)
         run: |
-          cp android/app/build/outputs/apk/debug/app-debug.apk \
-             "Hiiscript-latest-android.apk"
-          cp android/app/build/outputs/apk/debug/app-debug.apk \
-             "hiiscript-android-${VERSION}.apk"
+          set -euo pipefail
+          APK="android/app/build/outputs/apk/debug/app-debug.apk"
+          if [ ! -f "$APK" ]; then
+            echo "::error::APK not found at $APK"
+            exit 1
+          fi
+          cp "$APK" "Hiiscript-latest-android.apk"
+          cp "$APK" "hiiscript-android-${VERSION}.apk"
+          ls -la *.apk
+                - name: List dist contents
+        run: ls -la dist/ || ls -la
       - uses: actions/upload-artifact@v4
         with:
           name: android-builds
