@@ -1567,16 +1567,7 @@ echo "Open this in your browser: $URL"
 
 /* ================= UI wiring ================= */
 
-const pageZoomSelect = $("#pageZoom");
-function setPageZoom(value){
-  const zoom = Math.min(1.25, Math.max(.75, Number(value) || 1));
-  document.documentElement.style.setProperty("--page-zoom", zoom);
-  pageZoomSelect.value = String(zoom);
-  localStorage.setItem("kabrownie.screen.zoom", String(zoom));
-}
 
-pageZoomSelect.addEventListener("change", () => setPageZoom(pageZoomSelect.value));
-setPageZoom(localStorage.getItem("kabrownie.screen.zoom") || 1);
 
 function updateTemplateNotice(){
   templateNotice.classList.toggle("visible", store.firstRun === true);
@@ -1837,7 +1828,14 @@ $("#modal").addEventListener("click", (e) => { if(e.target.id === "modal") Scree
 $("#btnAbout").addEventListener("click", () => { $("#aboutModal").classList.add("open"); ScreenplayAccessibility.openModal($("#aboutModal"), $("#btnAbout")); });
 $("#closeAbout").addEventListener("click", () => ScreenplayAccessibility.closeModal($("#aboutModal")));
 $("#aboutModal").addEventListener("click", (e) => { if(e.target.id === "aboutModal") ScreenplayAccessibility.closeModal($("#aboutModal")); });
-
+$("#aboutVersion").textContent = APP_VERSION;
+$("#btnReportBug").addEventListener("click", () => {
+  window.open(
+    "https://github.com/kabrownie/HiiScript/issues/new/choose",
+    "_blank",
+    "noopener,noreferrer"
+  );
+});
 const updateToggle = $("#updateChecksToggle");
 updateToggle.checked = !!store.updateChecks;
 updateToggle.addEventListener("change", () => {

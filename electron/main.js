@@ -34,9 +34,13 @@ function createWindow() {
     if(/^https:\/\//i.test(url)) shell.openExternal(url);
     return { action: 'deny' };
   });
-  window.webContents.on('will-navigate', (event, url) => {
-    if(!url.startsWith('file:')) event.preventDefault();
-  });
+ window.webContents.on('will-navigate', (event, url) => {
+  if(url.startsWith('file:')) return;
+  event.preventDefault();
+  if(/^https:\/\//i.test(url) || /^mailto:/i.test(url)){
+    shell.openExternal(url);
+  }
+});
   const indexPath = path.join(__dirname, '..', 'www', 'index.html');
   window.webContents.on('did-fail-load', (_event, errorCode, errorDescription) => {
     console.error(`Hiiscript failed to load: ${errorCode} ${errorDescription}`);
