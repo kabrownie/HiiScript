@@ -55,8 +55,6 @@ jobs:
           cp "$DEB"      "dist/Hiiscript-latest-linux.deb"
           cp "$DEB"      "dist/hiiscript-linux-${VERSION}.deb"
           ls -la dist/
-                - name: List dist contents
-        run: ls -la dist/ || ls -la
       - uses: actions/upload-artifact@v4
         with:
           name: linux-builds
@@ -114,8 +112,6 @@ jobs:
           cp "$SETUP"    "dist/Hiiscript-latest-windows-setup.exe"
           cp "$SETUP"    "dist/hiiscript-windows-setup-${VERSION}.exe"
           ls -la dist/
-                - name: List dist contents
-        run: ls -la dist/ || ls -la
       - uses: actions/upload-artifact@v4
         with:
           name: windows-builds
@@ -157,8 +153,6 @@ jobs:
           cp "$APK" "Hiiscript-latest-android.apk"
           cp "$APK" "hiiscript-android-${VERSION}.apk"
           ls -la *.apk
-                - name: List dist contents
-        run: ls -la dist/ || ls -la
       - uses: actions/upload-artifact@v4
         with:
           name: android-builds
