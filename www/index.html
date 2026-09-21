@@ -95,28 +95,17 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
 
 /* ================= editor page ================= */
 #editorSheet{
-  position:relative;
+  flex-shrink:0;
   width:8.5in;
   max-width:calc(100% - 32px);
   margin:22px auto;
+  background:var(--paper);
   border-radius:5px;
   min-height:11in;
   box-shadow:0 12px 42px rgba(0,0,0,.65), 0 0 0 1px rgba(183,140,255,.12);
-  zoom:var(--page-zoom,1);
-}
-
-#editorSheet::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:var(--paper);
-  border-radius:5px;
-  z-index:0;
 }
 
 #editor{
-  position:relative;
-  z-index:1;
   padding:1in 1in 1in 1.5in;
   color:var(--paperink);
   font:12pt/1.06 "Courier New",Courier,"Nimbus Mono PS",monospace;
@@ -164,29 +153,17 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
 
 /* ================= preview paper ================= */
 .pageSheet{
-  position:relative;
   width:min(8.5in,100%);
   height:11in;
   min-height:11in;
   margin:0 auto 22px;
+  background:var(--paper);
   border-radius:4px;
   box-shadow:0 12px 42px rgba(0,0,0,.68), 0 0 0 1px rgba(183,140,255,.1);
-  zoom:var(--page-zoom,1);
   overflow:hidden;
 }
 
-.pageSheet::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:var(--paper);
-  border-radius:4px;
-  z-index:0;
-}
-
 .page{
-  position:relative;
-  z-index:1;
   padding:1in 1in 1in 1.5in;
   color:var(--paperink);
   font:12pt/1.06 "Courier New",Courier,"Nimbus Mono PS",monospace;
@@ -207,7 +184,7 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
   white-space:pre-wrap;border-left:3px solid #e8c34a}
 .page .pagebreak{border-top:1px dashed #ccc;margin:1.4em 0;height:0}
 .page .dialogblock{padding:0;margin-left:0}
-#editor,.page{zoom:var(--page-zoom,1)}
+
 #preview{min-height:100%}
 .titlepage{min-height:9in;display:flex;flex-direction:column;text-align:center;
   break-after:page;page-break-after:always}
@@ -220,7 +197,7 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
 .tp-bottom{margin-top:auto;text-align:left;white-space:pre-wrap}
 @container (max-width:900px){
   #previewPane{padding-left:8px;padding-right:8px}
-  #editorSheet,.pageSheet{zoom:1}
+ 
   .page{padding:8% 8% 8% 12%}
   .page .character{margin-left:42%}
   .page .dialog{margin-left:8%;width:68%}
@@ -266,7 +243,7 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
   body{background:#fff;display:block;overflow:visible}
   main{display:block;background:#fff}
   #previewPane{overflow:visible;background:#fff;padding:0;display:block !important}
-  .page{zoom:1 !important}
+
   .page{width:auto;height:auto;min-height:0;margin:0;padding:0;box-shadow:none;font-size:12pt;border-radius:0;overflow:visible}
   .page .section,.page .synopsis,.page .note{display:none}
   .page .pagebreak{border:0;break-after:page;page-break-after:always}
@@ -275,7 +252,14 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
 body.focus-mode header{display:none}
 body.focus-mode #previewPane{display:none}
 body.focus-mode #editorPane{flex:1;border-right:0}
-@media (max-width:700px){
+/* Mid-range: trim the least essential bits */
+@media (max-width:1120px){
+  .stats{display:none}
+  .toolbar-primary input[type=text]{width:130px;min-width:110px;max-width:170px}
+}
+
+/* Narrow: collapse the whole toolbar into a hamburger menu */
+@media (max-width:880px){
   header{flex-wrap:wrap;padding:6px 8px}
   .menu-toggle{display:block}
   .toolbar-primary{display:none;order:3;width:100%;padding:4px 0 0}
@@ -344,13 +328,7 @@ body.focus-mode #editorPane{flex:1;border-right:0}
       <button data-layout="editor">Write</button>
       <button data-layout="preview">Preview</button>
     </div>
-    <select id="pageZoom" title="Page zoom" aria-label="Page zoom">
-      <option value="0.75">75%</option>
-      <option value="0.9">90%</option>
-      <option value="1" selected>100%</option>
-      <option value="1.1">110%</option>
-      <option value="1.25">125%</option>
-    </select>
+  
     </div>
   </details>
   <details class="toolbar-menu">
@@ -366,6 +344,7 @@ body.focus-mode #editorPane{flex:1;border-right:0}
     <summary>Help</summary>
     <div class="toolbar-group">
     <button id="btnHelp" title="Fountain cheat sheet">?</button>
+     <button id="btnReportBug" title="Report a bug or request a feature">Report a bug…</button>
     <button id="btnAbout" title="About Hiiscript">About</button>
     </div>
   </details>
@@ -378,12 +357,15 @@ body.focus-mode #editorPane{flex:1;border-right:0}
 <button id="focusExit" class="focus-exit" type="button">Escape focus mode</button>
 
 <main id="main" data-layout="split">
-<section id="editorPane">
-  <div id="editorSheet">
-    <div id="editor" contenteditable="true" role="textbox" aria-label="Screenplay editor" aria-multiline="true" spellcheck="false"></div>
-  </div>
-  <aside id="sceneNav" aria-label="Scene navigator"><h2>Scenes</h2><div id="sceneList"></div></aside>
-</section>
+  <section id="editorPane">
+    <div id="editorSheet">
+      <div id="editor" contenteditable="true" role="textbox" aria-label="Screenplay editor" aria-multiline="true" spellcheck="false"></div>
+    </div>
+    <aside id="sceneNav" aria-label="Scene navigator"><h2>Scenes</h2><div id="sceneList"></div></aside>
+  </section>
+  <section id="previewPane">
+    <div id="preview" role="document" aria-label="Screenplay preview"></div>
+  </section>
 </main>
 
 <div id="autoBox"></div>
@@ -477,7 +459,7 @@ body.focus-mode #editorPane{flex:1;border-right:0}
   <div class="box about-box">
     <img class="about-logo" src="images/hiiscreen.png" alt="Hiiscript">
     <h2>Hiiscript</h2>
-    <p><strong>Version {APP_VERSION}</strong></p>
+    <p><strong>Version <span id="aboutVersion"></span></strong></p>
     <p><strong>Created by <a href="https://kabrownie.digital" target="_blank" rel="noreferrer">Kabrownie Digital</a>.</strong></p>
     <p>Hiiscript is an offline-first screenplay writer for Fountain scripts. It is designed to keep writing, drafts, and exports under the writer's control.</p>
 
@@ -496,8 +478,16 @@ body.focus-mode #editorPane{flex:1;border-right:0}
     <h3>Open source</h3>
     <p>The project is open source and may be inspected, modified, and self-hosted according to its license. Exported Fountain files remain plain text and portable.</p>
 
-    <h3>Contact</h3>
-    <p>Website: <a href="https://kabrownie.digital" target="_blank" rel="noreferrer">kabrownie.digital</a></p>
+  <h3>Support</h3>
+<p>
+  Found a bug, or have an idea for an improvement?
+  <a href="https://github.com/kabrownie/HiiScript/issues/new/choose" target="_blank" rel="noreferrer noopener">Open an issue on GitHub</a>
+  or
+  <a href="mailto:hallo@kabrownie.digital?subject=Hiiscript%20feedback">email hallo@kabrownie.digital</a>.
+</p>
+<p>
+  Website: <a href="https://kabrownie.digital" target="_blank" rel="noreferrer noopener">kabrownie.digital</a>
+</p>
     <button class="close primary" id="closeAbout">Close</button>
   </div>
 </div>
