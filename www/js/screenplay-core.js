@@ -19,7 +19,7 @@
   }
 
   function isCharacterName(value){
-    return /^[A-Z][A-Z0-9 .'-]{1,47}$/.test(String(value || "").trim());
+   return /^[A-Z][A-Z0-9 .'-]{1,41}$/.test(String(value || "").trim());
   }
 
   function isSceneHeading(value){
@@ -89,9 +89,30 @@
     if(/^(FADE\s*(IN|OUT|TO)?|CUT\s+TO|SMASH\s+CUT|MATCH\s+CUT|JUMP\s+CUT|DISSOLVE\s+TO|WIPE\s+TO|IRIS\s+(IN|OUT)|INTERCUT|BACK\s+TO|TIME\s+CUT|HARD\s+CUT)/i.test(t) || /TO:\s*$/.test(t)) return "transition";
     return "action";
   }
+function compareVersions(a, b){
+  const strip = v => String(v || "")
+    .trim()
+    .replace(/^v/i, "")
+    .split("-")[0];                     // drop pre-release suffix
+  const toParts = v => strip(v).split(".").map(n => {
+    const i = parseInt(n, 10);
+    return Number.isFinite(i) ? i : 0;
+  });
 
+  const pa = toParts(a);
+  const pb = toParts(b);
+  const len = Math.max(pa.length, pb.length);
+
+  for(let i = 0; i < len; i++){
+    const x = pa[i] ?? 0;
+    const y = pb[i] ?? 0;
+    if(x > y) return 1;
+    if(x < y) return -1;
+  }
+  return 0;
+}
   const api = { cleanList, normalizeLibrary, isCharacterName, isSceneHeading, detectType,
-    normalizeFountainText, validateDraft, getScriptStats, fountainToMarkdown };
+    normalizeFountainText, validateDraft, getScriptStats, fountainToMarkdown, compareVersions };
   if(typeof window !== "undefined") window.ScreenplayCore = api;
   if(typeof module !== "undefined" && module.exports) module.exports = api;
 })();

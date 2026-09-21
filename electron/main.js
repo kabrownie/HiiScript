@@ -3,8 +3,23 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 
-// Keep the desktop app usable on Linux systems with unstable or legacy GPU drivers.
-app.disableHardwareAcceleration();
+// GPU acceleration policy.
+//
+// Linux: disabled by default, because a subset of legacy and unstable GPU
+// drivers crash the renderer before the first paint. Users on healthy systems
+// can opt back in with HIISCRIPT_FORCE_GPU=1.
+//
+// Windows and macOS: enabled by default. Users who hit graphics problems can
+// opt out with HIISCRIPT_DISABLE_GPU=1.
+//
+// HIISCRIPT_DISABLE_GPU=1 always wins.
+const disableGpu =
+  process.env.HIISCRIPT_DISABLE_GPU === "1" ||
+  (process.platform === "linux" && process.env.HIISCRIPT_FORCE_GPU !== "1");
+
+if(disableGpu){
+  app.disableHardwareAcceleration();
+}
 
 function createWindow() {
   const window = new BrowserWindow({
@@ -19,9 +34,13 @@ function createWindow() {
     if(/^https:\/\//i.test(url)) shell.openExternal(url);
     return { action: 'deny' };
   });
-  window.webContents.on('will-navigate', (event, url) => {
-    if(!url.startsWith('file:')) event.preventDefault();
-  });
+ window.webContents.on('will-navigate', (event, url) => {
+  if(url.startsWith('file:')) return;
+  event.preventDefault();
+  if(/^https:\/\//i.test(url) || /^mailto:/i.test(url)){
+    shell.openExternal(url);
+  }
+});
   const indexPath = path.join(__dirname, '..', 'www', 'index.html');
   window.webContents.on('did-fail-load', (_event, errorCode, errorDescription) => {
     console.error(`Hiiscript failed to load: ${errorCode} ${errorDescription}`);

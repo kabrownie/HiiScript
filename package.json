@@ -1,6 +1,6 @@
 {
   "name": "hiiscript",
-  "version": "1.0.2",
+  "version": "1.0.11",
   "productName": "Hiiscript",
   "description": "An open source screenplay writer.",
   "author": {
@@ -12,6 +12,7 @@
     "start": "electron .",
     "dev": "electron . --enable-devtools",
     "web": "npx http-server www -p 8080",
+     "sync:images": "rm -rf www/images && cp -r images www/images",
     "test": "node --test test/*.test.js",
     "build:linux": "electron-builder --linux AppImage deb --publish never",
     "build:win": "electron-builder --win nsis portable --publish never",
@@ -19,6 +20,7 @@
     "android:sync": "npx cap sync android",
     "android:open": "npx cap open android",
     "android:build": "npm run android:sync && cd android && ./gradlew assembleDebug"
+  
   },
   "keywords": [
     "screenplay",

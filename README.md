@@ -14,15 +14,23 @@ Support continued development: [Sponsor Hiiscript on GitHub](https://github.com/
 
 **Release page:** [GitHub Releases](https://github.com/kabrownie/Hiiscript/releases/latest)
 
-## Release 1.0.10
-
-The 1.0.10 release is the latest production packaging pass for desktop and Android builds. It targets the same offline screenplay workflow, with the release pipeline configured for Linux, Windows, and Android artifact generation.
+## Release 1.0.11
+The 1.0.11  the latest production packaging pass for desktop and Android builds. It targets the same offline screenplay workflow, with the release pipeline configured for Linux, Windows, and Android artifact generation.
 
 ## Privacy
 
 Hiiscript is offline-first. Scripts, settings, characters, and scene suggestions are stored locally on the user's device. The app has no accounts, advertising, analytics, tracking pixels, or background screenplay uploads. Draft files are written only when the user chooses **Save**.
 
 PDF import uses the bundled open-source PDF.js reader and is processed locally in the app; no screenplay upload service or internet connection is required.
+
+Two network requests exist, both opt-in or disclosed:
+
+- **Update checks** (opt-in). If enabled in the About dialog, the app requests
+  the latest release tag from `api.github.com` at most once every six hours.
+  This shares your IP address with GitHub; nothing else is sent.
+- **PDF import** (first use only). The bundled PDF.js reader is used offline.
+  If the bundled copy is missing, the app falls back to a public CDN for the
+  reader script.
 
 ## Developer Quick Start
 
@@ -90,8 +98,8 @@ npm run build:linux
 
 Builds are written to `dist/`:
 
-- `hiiscript-1.0.2-x86_64.AppImage` runs without installation.
-- `hiiscript-1.0.2-amd64.deb` installs with `sudo dpkg -i`.
+- `hiiscript-1.0.11-x86_64.AppImage` runs without installation.
+- `hiiscript-1.0.11-amd64.deb` installs with `sudo dpkg -i`.
 
 ### Build Windows packages
 
@@ -148,5 +156,25 @@ Keep `www/index.html` as the single source of truth. Electron reads it on every 
 - `images/` contains the Kabrownie logo, favicon, and desktop app icons used by packaged builds.
 - `capacitor.config.json` configures the shared web bundle for native targets.
 - `.vscode/` contains launch and task definitions for local development.
+`images/` is the canonical source. `www/images/` is a copy that must exist
+for the web preview and Android builds, which cannot reach above `www/`.
+After changing any file in `images/`, run:
+
+```bash
+npm run sync:images
+
+
+## Performance
+
+On Linux, Hiiscript disables GPU acceleration by default because a subset of
+legacy and unstable drivers crash the renderer before the first paint. If your
+system has working drivers, set `HIISCRIPT_FORCE_GPU=1` before launching to
+enable hardware acceleration:
+
+```bash
+HIISCRIPT_FORCE_GPU=1 ./hiiscript-1.0.11-x86_64.AppImage
+
+HIISCRIPT_DISABLE_GPU=1 Hiiscript.exe
+```
 
 Shared screenplay rules live in `www/js/screenplay-core.js`; accessibility helpers live in `www/js/accessibility.js`. The HTML file still owns the editor controller and markup, but reusable classification and data normalization are now testable outside the browser.

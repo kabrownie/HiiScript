@@ -1,6 +1,6 @@
 # Dependencies
 node_modules/
-
+*.bak
 # Build and packaged output
 dist/
 out/
@@ -37,3 +37,5 @@ Thumbs.db
 !.vscode/launch.json
 !.vscode/tasks.json
 !.vscode/extensions.json
+*.bak
+todo
