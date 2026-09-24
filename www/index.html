@@ -283,7 +283,7 @@ body.focus-mode #editorPane{flex:1;border-right:0}
 <header>
   <div class="brand">HIISCRIPT <span>offline</span></div>
   <button id="menuToggle" class="menu-toggle" type="button" aria-label="Open main menu" aria-expanded="false">☰</button>
-  <span id="templateNotice" class="template-notice">Starter template — edit it or create a new script <button id="dismissTemplate" type="button">Dismiss</button></span>
+  
   <span id="updateNotice" class="update-notice" role="status"></span>
   <div class="toolbar-primary" aria-label="Quick actions">
     <input type="text" id="docTitle" placeholder="Untitled" autocomplete="off" spellcheck="false" aria-label="Project name">
@@ -324,7 +324,7 @@ body.focus-mode #editorPane{flex:1;border-right:0}
     <button id="btnScenes" title="Open scene navigator">Scenes</button>
     <button id="btnFocus" title="Toggle focus mode">Focus</button>
     <div class="seg" role="group" aria-label="Layout">
-      <button data-layout="split" class="active">Split</button>
+     <button data-layout="split">Split</button>
       <button data-layout="editor">Write</button>
       <button data-layout="preview">Preview</button>
     </div>
@@ -353,10 +353,11 @@ body.focus-mode #editorPane{flex:1;border-right:0}
   <input type="file" id="fileInput" accept=".pdf,.fountain,.txt,.spmd,.md,.fdx,.xml" hidden>
   <input type="file" id="draftInput" accept=".json,.fountain,.txt,.md" hidden>
 </header>
+<span id="templateNotice" class="template-notice">This is a Starter template — edit it or create a new script  <button id="dismissTemplate" type="button">Dismiss</button></span>
 
 <button id="focusExit" class="focus-exit" type="button">Escape focus mode</button>
 
-<main id="main" data-layout="split">
+<main id="main" data-layout="editor">
   <section id="editorPane">
     <div id="editorSheet">
       <div id="editor" contenteditable="true" role="textbox" aria-label="Screenplay editor" aria-multiline="true" spellcheck="false"></div>
@@ -380,7 +381,6 @@ body.focus-mode #editorPane{flex:1;border-right:0}
     <div class="row"><button id="findNext">Find next</button><button id="replaceOne">Replace</button><button id="replaceAll">Replace all</button><button class="close primary" id="closeFind">Done</button></div>
   </div>
 </div>
-
 <div class="modal" id="modal">
   <div class="box">
     <h2>Hiiscript — quick guide</h2>

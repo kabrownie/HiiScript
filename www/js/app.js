@@ -132,6 +132,8 @@ function defaultStore(){
     scenes: ["INT. CITY ROOFTOP - NIGHT"],
     firstRun: true,
     updateChecks: false
+    ,
+   layout: "editor"
   };
 }
 
@@ -1731,11 +1733,21 @@ $("#btnPageBreak").addEventListener("click", () => {
   setStatus("Page break inserted");
 });
 
+function applyLayout(name){
+  const valid = ["editor", "split", "preview"];
+  const layout = valid.includes(name) ? name : "editor";
+  mainEl.dataset.layout = layout;
+  document.querySelectorAll("[data-layout]").forEach(b => {
+    b.classList.toggle("active", b.dataset.layout === layout);
+  });
+}
+
 document.querySelectorAll("[data-layout]").forEach(btn => {
   btn.addEventListener("click", () => {
-    document.querySelectorAll("[data-layout]").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    mainEl.dataset.layout = btn.dataset.layout;
+    const layout = btn.dataset.layout;
+    store.layout = layout;
+    persist();
+    applyLayout(layout);
     render();
   });
 });
@@ -1921,6 +1933,8 @@ function applyRecovery(recovery){
 }
 
 function finishInit(recovered){
+  applyLayout(store.layout || "editor");
+
   refreshDocList();
   render();
   persist();
