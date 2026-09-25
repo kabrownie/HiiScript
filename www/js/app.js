@@ -41,12 +41,12 @@ const detectType = ScreenplayCore.detectType;
 
 /* ================= store ================= */
 
-
 let saveTimer = null;
 let dirty = false;
 let history = [];
 let historyIndex = -1;
 let applyingHistory = false;
+
 const STARTER_TEMPLATE = `Title: The Last Signal
 Credit: Written by
 Author: Hiiscript Template
@@ -131,9 +131,8 @@ function defaultStore(){
     characters: ["NOVA", "VEX", "RADIO VOICE"],
     scenes: ["INT. CITY ROOFTOP - NIGHT"],
     firstRun: true,
-    updateChecks: false
-    ,
-   layout: "editor"
+    updateChecks: false,
+    layout: "editor"
   };
 }
 
@@ -162,6 +161,8 @@ async function loadStore(){
   const raw = await HiiscriptStorage.get(STORE_KEY);
   if(raw && Array.isArray(raw.docs) && raw.docs.length){
     store = ScreenplayCore.normalizeLibrary(raw);
+    if(typeof store.layout !== "string") store.layout = "editor";
+    if(typeof store.updateChecks !== "boolean") store.updateChecks = false;
   } else {
     store = defaultStore();
     await HiiscriptStorage.set(STORE_KEY, store);
@@ -226,6 +227,7 @@ async function recoverySnapshot(){
     return null;
   }
 }
+
 function activeDoc(){
   return store.docs.find(d => d.id === store.active) || store.docs[0];
 }
@@ -478,7 +480,7 @@ function render(){
   if(pageBlocks.length || !pages.length) pages.push(pageBlocks);
   let html = titlePage ? `<div class="pageSheet"><div class="page">${renderTitlePage(titlePage)}</div></div>` : "";
   html += pages.map(page => `<div class="pageSheet"><div class="page">${page.map(renderBlock).join("")}</div></div>`).join("");
-  preview.innerHTML = html || `<div class="page"><p class="action" style="color:#c9a">Nothing yet — start typing.</p></div>`;
+  preview.innerHTML = html || `<div class="pageSheet"><div class="page"><p class="action" style="color:#c9a">Nothing yet — start typing.</p></div></div>`;
   requestAnimationFrame(paginatePreview);
 }
 
@@ -542,8 +544,10 @@ function captureHistory(){
 }
 
 function updateHistoryButtons(){
-  $("#btnUndo").disabled = historyIndex <= 0;
-  $("#btnRedo").disabled = historyIndex < 0 || historyIndex >= history.length - 1;
+  const btnUndo = $("#btnUndo");
+  const btnRedo = $("#btnRedo");
+  if(btnUndo) btnUndo.disabled = historyIndex <= 0;
+  if(btnRedo) btnRedo.disabled = historyIndex < 0 || historyIndex >= history.length - 1;
 }
 
 function restoreHistory(index){
@@ -1351,7 +1355,8 @@ function loadPdfJs(){
       s.src = url;
       s.onload = () => {
         if(window.pdfjsLib){
-          window.pdfjsLib.GlobalWorkerOptions.workerSrc = "vendor/pdf.worker.min.js";
+          const workerUrl = new URL("vendor/pdf.worker.min.js", document.baseURI).href;
+          window.pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
           resolve(window.pdfjsLib);
         } else tryNext();
       };
@@ -1569,8 +1574,6 @@ echo "Open this in your browser: $URL"
 
 /* ================= UI wiring ================= */
 
-
-
 function updateTemplateNotice(){
   templateNotice.classList.toggle("visible", store.firstRun === true);
 }
@@ -1733,6 +1736,15 @@ $("#btnPageBreak").addEventListener("click", () => {
   setStatus("Page break inserted");
 });
 
+/* ---------- Layout ---------- */
+
+function syncMobileTabs(){
+  const current = store.layout || "editor";
+  document.querySelectorAll("#mobileTabs [data-pane]").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.pane === current);
+  });
+}
+
 function applyLayout(name){
   const valid = ["editor", "split", "preview"];
   const layout = valid.includes(name) ? name : "editor";
@@ -1740,6 +1752,7 @@ function applyLayout(name){
   document.querySelectorAll("[data-layout]").forEach(b => {
     b.classList.toggle("active", b.dataset.layout === layout);
   });
+  syncMobileTabs();
 }
 
 document.querySelectorAll("[data-layout]").forEach(btn => {
@@ -1752,6 +1765,18 @@ document.querySelectorAll("[data-layout]").forEach(btn => {
   });
 });
 
+document.querySelectorAll("#mobileTabs [data-pane]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const pane = btn.dataset.pane;
+    store.layout = pane;
+    persist();
+    applyLayout(pane);
+    render();
+  });
+});
+
+/* ---------- Export ---------- */
+
 function exportCurrent(format){
   flush();
   const d = activeDoc();
@@ -1760,7 +1785,11 @@ function exportCurrent(format){
     const previous = mainEl.dataset.layout;
     mainEl.dataset.layout = "preview";
     render();
-    setTimeout(() => { window.print(); mainEl.dataset.layout = previous; }, 80);
+    setTimeout(() => {
+      window.print();
+      mainEl.dataset.layout = previous;
+      syncMobileTabs();
+    }, 80);
     return;
   }
   if(format === "markdown") download(safe + ".md", ScreenplayCore.fountainToMarkdown(d.text), "text/markdown;charset=utf-8");
@@ -1848,6 +1877,7 @@ $("#btnReportBug").addEventListener("click", () => {
     "noopener,noreferrer"
   );
 });
+
 const updateToggle = $("#updateChecksToggle");
 updateToggle.checked = !!store.updateChecks;
 updateToggle.addEventListener("change", () => {
@@ -1920,6 +1950,21 @@ document.addEventListener("selectionchange", () => {
 });
 
 window.addEventListener("beforeunload", () => { flush(); });
+
+/* ================= mobile soft keyboard ================= */
+
+if(window.visualViewport){
+  const layoutHeight = window.innerHeight;
+  window.visualViewport.addEventListener("resize", () => {
+    const visible = window.visualViewport.height;
+    const keyboardOpen = visible < layoutHeight * 0.75;
+    document.body.classList.toggle("keyboard-open", keyboardOpen);
+    if(keyboardOpen){
+      const line = getCurrentLine();
+      if(line) line.scrollIntoView({block: "center", behavior: "smooth"});
+    }
+  });
+}
 
 /* ================= boot ================= */
 

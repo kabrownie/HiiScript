@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="images/cube.png" type="image/png">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com; img-src 'self' data: blob:; font-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'none';">
 <title>Hiiscript</title>
@@ -20,11 +20,15 @@ body{
   margin:0;display:flex;flex-direction:column;background:var(--bg);color:var(--ink);
   font:13.5px/1.45 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   overflow:hidden;
+  padding-left:env(safe-area-inset-left);
+  padding-right:env(safe-area-inset-right);
 }
 
 /* ================= header ================= */
 header{
-  display:flex;align-items:center;gap:6px;padding:7px 11px;flex-wrap:nowrap;
+  display:flex;align-items:center;gap:6px;
+  padding:calc(7px + env(safe-area-inset-top)) calc(11px + env(safe-area-inset-right)) 7px calc(11px + env(safe-area-inset-left));
+  flex-wrap:nowrap;
   background:var(--panel);
   border-bottom:1px solid var(--line);
   box-shadow:0 2px 14px rgba(183,140,255,.09);
@@ -104,7 +108,6 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
   min-height:11in;
   box-shadow:0 12px 42px rgba(0,0,0,.65), 0 0 0 1px rgba(183,140,255,.12);
 }
-
 #editor{
   padding:1in 1in 1in 1.5in;
   color:var(--paperink);
@@ -162,7 +165,6 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
   box-shadow:0 12px 42px rgba(0,0,0,.68), 0 0 0 1px rgba(183,140,255,.1);
   overflow:hidden;
 }
-
 .page{
   padding:1in 1in 1in 1.5in;
   color:var(--paperink);
@@ -197,7 +199,6 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
 .tp-bottom{margin-top:auto;text-align:left;white-space:pre-wrap}
 @container (max-width:900px){
   #previewPane{padding-left:8px;padding-right:8px}
- 
   .page{padding:8% 8% 8% 12%}
   .page .character{margin-left:42%}
   .page .dialog{margin-left:8%;width:68%}
@@ -239,11 +240,10 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
 /* ================= print ================= */
 @page{size:letter;margin:1in 1in 1in 1.5in}
 @media print{
-  header,.modal,#editorPane,#autoBox{display:none !important}
+  header,.modal,#editorPane,#autoBox,.mobile-tabs{display:none !important}
   body{background:#fff;display:block;overflow:visible}
   main{display:block;background:#fff}
   #previewPane{overflow:visible;background:#fff;padding:0;display:block !important}
-
   .page{width:auto;height:auto;min-height:0;margin:0;padding:0;box-shadow:none;font-size:12pt;border-radius:0;overflow:visible}
   .page .section,.page .synopsis,.page .note{display:none}
   .page .pagebreak{border:0;break-after:page;page-break-after:always}
@@ -252,27 +252,87 @@ main[data-layout="editor"] #editorPane{flex:1 1 100%;border-right:0}
 body.focus-mode header{display:none}
 body.focus-mode #previewPane{display:none}
 body.focus-mode #editorPane{flex:1;border-right:0}
-/* Mid-range: trim the least essential bits */
+
+/* ================= responsive ================= */
 @media (max-width:1120px){
   .stats{display:none}
   .toolbar-primary input[type=text]{width:130px;min-width:110px;max-width:170px}
 }
 
-/* Narrow: collapse the whole toolbar into a hamburger menu */
 @media (max-width:880px){
-  header{flex-wrap:wrap;padding:6px 8px}
+  header{flex-wrap:wrap;padding:6px 8px;padding-top:calc(6px + env(safe-area-inset-top))}
   .menu-toggle{display:block}
   .toolbar-primary{display:none;order:3;width:100%;padding:4px 0 0}
   .toolbar-primary input[type=text]{flex:1;min-width:0;width:auto}
   header.menu-open .toolbar-primary{display:flex}
   header .toolbar-menu{display:none;order:4}
   header.menu-open .toolbar-menu{display:block}
-  header.menu-open .toolbar-menu .toolbar-group{position:fixed;top:49px;left:8px;right:8px;min-width:0;max-height:calc(100vh - 65px);overflow:auto}
+  header.menu-open .toolbar-menu .toolbar-group{position:fixed;top:calc(49px + env(safe-area-inset-top));left:8px;right:8px;min-width:0;max-height:calc(100vh - 65px);overflow:auto}
   header.menu-open .toolbar-menu summary{border-left:0;padding:8px 4px}
   header.menu-open .toolbar-menu[open] .toolbar-group{position:fixed}
   .spacer{display:none}
   .status{margin-left:auto;max-width:42vw;overflow:hidden;text-overflow:ellipsis}
 }
+
+/* ================= mobile tab bar ================= */
+.mobile-tabs{
+  display:none;
+  position:fixed;
+  left:0;right:0;bottom:0;
+  z-index:50;
+  background:var(--panel);
+  border-top:1px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom);
+  box-shadow:0 -2px 12px rgba(0,0,0,.35);
+  transition:transform .18s ease;
+}
+.mobile-tabs button{
+  flex:1;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2px;
+  padding:10px 6px;
+  border:0;border-radius:0;background:transparent;
+  color:var(--muted);
+  font-size:11px;font-weight:600;letter-spacing:.02em;
+  cursor:pointer;
+}
+.mobile-tabs button.active{color:var(--accent2)}
+.mobile-tabs button.active .mobile-tab-icon{color:var(--accent)}
+.mobile-tab-icon{font-size:18px;line-height:1}
+body.keyboard-open .mobile-tabs{transform:translateY(120%)}
+
+@media (max-width:700px){
+  /* Force a single pane; ignore "split" at phone widths */
+  main[data-layout="split"] #previewPane{display:none}
+  main[data-layout="split"] #editorPane{flex:1 1 100%;border-right:0}
+
+  /* Room for the tab bar */
+  #previewPane{padding-bottom:calc(70px + env(safe-area-inset-bottom))}
+  #editorPane{overflow:auto}
+
+  /* Show the tab bar */
+  .mobile-tabs{display:flex}
+
+  /* Force the paper to fit the viewport (high specificity to beat base rules) */
+  body #editorSheet,
+  body .pageSheet{
+    width:100% !important;
+    max-width:100% !important;
+    margin:12px auto;
+    border-radius:0;
+    box-shadow:none;
+  }
+  body #editorSheet{ min-height:auto }
+  body #editor{padding:24px 20px}
+  body .page{padding:24px 20px}
+}
+
+@media (max-width:480px){
+  .brand span{display:none}
+  .brand{font-size:12px}
+  header{gap:4px;padding:6px 8px;padding-top:calc(6px + env(safe-area-inset-top))}
+}
+
 .stats{color:var(--muted);font-size:11px;white-space:nowrap;padding:0 4px}
 .dirty{color:#ffd166}
 .saved{color:#9be7a5}
@@ -283,7 +343,6 @@ body.focus-mode #editorPane{flex:1;border-right:0}
 <header>
   <div class="brand">HIISCRIPT <span>offline</span></div>
   <button id="menuToggle" class="menu-toggle" type="button" aria-label="Open main menu" aria-expanded="false">☰</button>
-  
   <span id="updateNotice" class="update-notice" role="status"></span>
   <div class="toolbar-primary" aria-label="Quick actions">
     <input type="text" id="docTitle" placeholder="Untitled" autocomplete="off" spellcheck="false" aria-label="Project name">
@@ -324,11 +383,10 @@ body.focus-mode #editorPane{flex:1;border-right:0}
     <button id="btnScenes" title="Open scene navigator">Scenes</button>
     <button id="btnFocus" title="Toggle focus mode">Focus</button>
     <div class="seg" role="group" aria-label="Layout">
-     <button data-layout="split">Split</button>
+      <button data-layout="split">Split</button>
       <button data-layout="editor">Write</button>
       <button data-layout="preview">Preview</button>
     </div>
-  
     </div>
   </details>
   <details class="toolbar-menu">
@@ -344,7 +402,7 @@ body.focus-mode #editorPane{flex:1;border-right:0}
     <summary>Help</summary>
     <div class="toolbar-group">
     <button id="btnHelp" title="Fountain cheat sheet">?</button>
-     <button id="btnReportBug" title="Report a bug or request a feature">Report a bug…</button>
+    <button id="btnReportBug" title="Report a bug or request a feature">Report a bug…</button>
     <button id="btnAbout" title="About Hiiscript">About</button>
     </div>
   </details>
@@ -353,7 +411,7 @@ body.focus-mode #editorPane{flex:1;border-right:0}
   <input type="file" id="fileInput" accept=".pdf,.fountain,.txt,.spmd,.md,.fdx,.xml" hidden>
   <input type="file" id="draftInput" accept=".json,.fountain,.txt,.md" hidden>
 </header>
-<span id="templateNotice" class="template-notice">This is a Starter template — edit it or create a new script  <button id="dismissTemplate" type="button">Dismiss</button></span>
+<span id="templateNotice" class="template-notice">This is a Starter template — edit it or create a new script <button id="dismissTemplate" type="button">Dismiss</button></span>
 
 <button id="focusExit" class="focus-exit" type="button">Escape focus mode</button>
 
@@ -369,6 +427,17 @@ body.focus-mode #editorPane{flex:1;border-right:0}
   </section>
 </main>
 
+<nav id="mobileTabs" class="mobile-tabs" aria-label="Editor and preview">
+  <button type="button" data-pane="editor" class="active">
+    <span class="mobile-tab-icon" aria-hidden="true">✎</span>
+    <span>Write</span>
+  </button>
+  <button type="button" data-pane="preview">
+    <span class="mobile-tab-icon" aria-hidden="true">◫</span>
+    <span>Preview</span>
+  </button>
+</nav>
+
 <div id="autoBox"></div>
 
 <div class="modal" id="findModal">
@@ -381,6 +450,7 @@ body.focus-mode #editorPane{flex:1;border-right:0}
     <div class="row"><button id="findNext">Find next</button><button id="replaceOne">Replace</button><button id="replaceAll">Replace all</button><button class="close primary" id="closeFind">Done</button></div>
   </div>
 </div>
+
 <div class="modal" id="modal">
   <div class="box">
     <h2>Hiiscript — quick guide</h2>
@@ -464,33 +534,34 @@ body.focus-mode #editorPane{flex:1;border-right:0}
     <p>Hiiscript is an offline-first screenplay writer for Fountain scripts. It is designed to keep writing, drafts, and exports under the writer's control.</p>
 
     <h3>Privacy policy</h3>
-<p><strong>Your scripts stay on your device.</strong> The app stores recovery snapshots, drafts, settings, characters, and scene suggestions in local browser storage. Draft files are written only when you choose <b>Save</b>, and only to the location you select.</p>
-<p>Hiiscript does not include accounts, advertising, analytics, tracking pixels, or background uploads. Two exceptions, both opt-in or clearly disclosed:</p>
-<ul>
-  <li><b>Update checks</b> (opt-in). If enabled, the app requests the latest release tag from <code>api.github.com</code> at most once every six hours. This shares your IP address with GitHub; nothing else is sent.</li>
-  <li><b>PDF import</b> (first use only). The bundled PDF.js reader is used offline. If the bundled copy is missing, the app falls back to a public CDN for the reader script.</li>
-</ul>
-<h3>Preferences</h3>
-<label style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
-  <input type="checkbox" id="updateChecksToggle">
-  <span>Check for updates automatically (sends an anonymous request to GitHub every 6 hours)</span>
-</label>
+    <p><strong>Your scripts stay on your device.</strong> The app stores recovery snapshots, drafts, settings, characters, and scene suggestions in local browser storage. Draft files are written only when you choose <b>Save</b>, and only to the location you select.</p>
+    <p>Hiiscript does not include accounts, advertising, analytics, tracking pixels, or background uploads. Two exceptions, both opt-in or clearly disclosed:</p>
+    <ul>
+      <li><b>Update checks</b> (opt-in). If enabled, the app requests the latest release tag from <code>api.github.com</code> at most once every six hours. This shares your IP address with GitHub; nothing else is sent.</li>
+      <li><b>PDF import</b> (first use only). The bundled PDF.js reader is used offline. If the bundled copy is missing, the app falls back to a public CDN for the reader script.</li>
+    </ul>
+    <h3>Preferences</h3>
+    <label style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+      <input type="checkbox" id="updateChecksToggle">
+      <span>Check for updates automatically (sends an anonymous request to GitHub every 6 hours)</span>
+    </label>
     <h3>Open source</h3>
     <p>The project is open source and may be inspected, modified, and self-hosted according to its license. Exported Fountain files remain plain text and portable.</p>
 
-  <h3>Support</h3>
-<p>
-  Found a bug, or have an idea for an improvement?
-  <a href="https://github.com/kabrownie/HiiScript/issues/new/choose" target="_blank" rel="noreferrer noopener">Open an issue on GitHub</a>
-  or
-  <a href="mailto:hallo@kabrownie.digital?subject=Hiiscript%20feedback">email hallo@kabrownie.digital</a>.
-</p>
-<p>
-  Website: <a href="https://kabrownie.digital" target="_blank" rel="noreferrer noopener">kabrownie.digital</a>
-</p>
+    <h3>Support</h3>
+    <p>
+      Found a bug, or have an idea for an improvement?
+      <a href="https://github.com/kabrownie/HiiScript/issues/new/choose" target="_blank" rel="noreferrer noopener">Open an issue on GitHub</a>
+      or
+      <a href="mailto:hallo@kabrownie.digital?subject=Hiiscript%20feedback">email hallo@kabrownie.digital</a>.
+    </p>
+    <p>
+      Website: <a href="https://kabrownie.digital" target="_blank" rel="noreferrer noopener">kabrownie.digital</a>
+    </p>
     <button class="close primary" id="closeAbout">Close</button>
   </div>
 </div>
+
 <div class="modal" id="recoveryModal">
   <div class="box">
     <h2>Recover unsaved work?</h2>
@@ -502,7 +573,10 @@ body.focus-mode #editorPane{flex:1;border-right:0}
     </div>
   </div>
 </div>
+
 <script src="js/storage.js"></script>
 <script src="js/screenplay-core.js"></script>
 <script src="js/accessibility.js"></script>
 <script src="js/app.js"></script>
+</body>
+</html>
