@@ -14,10 +14,14 @@
     "web": "npx http-server www -p 8080",
      "sync:images": "rm -rf www/images && cp -r images www/images",
     "test": "node --test test/*.test.js",
+    "inject-version": "node scripts/inject-version.js",
+    "prebuild:linux": "npm run inject-version",
     "build:linux": "electron-builder --linux AppImage deb --publish never",
+    "prebuild:win": "npm run inject-version",
     "build:win": "electron-builder --win nsis portable --publish never",
     "android:add": "npx cap add android",
     "android:sync": "npx cap sync android",
+    "preandroid:build": "npm run inject-version",
     "android:open": "npx cap open android",
     "android:build": "npm run android:sync && cd android && ./gradlew assembleDebug"
   

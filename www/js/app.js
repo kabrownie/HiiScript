@@ -1,5 +1,5 @@
 "use strict";
-const APP_VERSION = "1.0.11";
+const APP_VERSION = "__APP_VERSION__";
 /* ============================================================
   Hiiscript — a single-file offline Fountain screenwriter
    ============================================================ */
