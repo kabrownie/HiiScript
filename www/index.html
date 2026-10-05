@@ -348,10 +348,8 @@ body.keyboard-open .mobile-tabs{transform:translateY(120%)}
     <input type="text" id="docTitle" placeholder="Untitled" autocomplete="off" spellcheck="false" aria-label="Project name">
     <button id="quickUndo" type="button" title="Undo (Ctrl/Cmd+Z)" aria-label="Undo">Undo</button>
     <button id="quickRedo" type="button" title="Redo (Ctrl/Cmd+Shift+Z)" aria-label="Redo">Redo</button>
-    <select id="saveFormat" title="Save format" aria-label="Save format"><option value="fountain">Save Fountain</option><option value="markdown">Save Markdown</option><option value="json">Save project backup</option></select>
+    <select id="saveFormat" title="Save as format" aria-label="Save as format"><option value="fountain">Fountain</option><option value="markdown">Markdown</option><option value="json">Project backup</option><option value="pdf">PDF</option></select>
     <button id="quickSave" type="button" title="Save in the selected format">Save</button>
-    <select id="exportFormat" title="Export format" aria-label="Export format"><option value="fountain">Fountain</option><option value="markdown">Markdown</option><option value="pdf">PDF</option></select>
-    <button id="quickExport" type="button" title="Export in the selected format">Export</button>
   </div>
   <details class="toolbar-menu">
     <summary>File</summary>
@@ -361,8 +359,6 @@ body.keyboard-open .mobile-tabs{transform:translateY(120%)}
     <button id="btnNewTemplate" title="Create a new script from the starter template">New from template</button>
     <select id="importFormat" title="Import file type" aria-label="Import file type"><option value="any">Choose import type</option><option value="fountain">Fountain / text</option><option value="fdx">Final Draft (.fdx)</option><option value="pdf">PDF</option><option value="json">Project backup (.json)</option></select>
     <button id="btnImport" class="primary" title="Import the selected file type">Import</button>
-    <select id="menuExportFormat" title="Export file type" aria-label="Export file type"><option value="fountain">Fountain</option><option value="markdown">Markdown</option><option value="pdf">PDF</option></select>
-    <button id="btnExport" title="Export the selected file type">Export</button>
     <button id="btnOpen" title="Open a project backup">Open backup</button>
     <button id="btnSave" title="Save in the selected format">Save</button>
     </div>

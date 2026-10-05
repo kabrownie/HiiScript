@@ -582,6 +582,10 @@ function draftJson(){
 }
 
 async function saveDraftFile(format = $("#saveFormat").value){
+  if(format === "pdf"){
+    exportCurrent("pdf");
+    return;
+  }
   flush();
   const d = activeDoc();
   const safe = (d.title || "screenplay").replace(/[^\w\-. ]+/g, "").trim() || "screenplay";
@@ -1797,14 +1801,11 @@ function exportCurrent(format){
   setStatus("Exported " + (format === "markdown" ? ".md" : ".fountain"));
 }
 
-$("#btnExport").addEventListener("click", () => exportCurrent($("#menuExportFormat").value));
-
 $("#btnUndo").addEventListener("click", undo);
 $("#btnRedo").addEventListener("click", redo);
 $("#quickUndo").addEventListener("click", undo);
 $("#quickRedo").addEventListener("click", redo);
 $("#quickSave").addEventListener("click", () => saveDraftFile().catch(() => setStatus("Could not save file")));
-$("#quickExport").addEventListener("click", () => exportCurrent($("#exportFormat").value));
 $("#btnScenes").addEventListener("click", () => {
   renderSceneNavigator();
   $("#sceneNav").classList.toggle("open");
@@ -1851,9 +1852,6 @@ $("#fileInput").addEventListener("change", (e) => {
   e.target.value = "";
 });
 
-$("#exportFormat").addEventListener("change", e => { $("#menuExportFormat").value = e.target.value; });
-$("#menuExportFormat").addEventListener("change", e => { $("#exportFormat").value = e.target.value; });
-
 $("#btnPrint").addEventListener("click", () => exportCurrent("pdf"));
 
 $("#menuToggle").addEventListener("click", () => {
@@ -1896,6 +1894,11 @@ document.addEventListener("click", (e) => {
 });
 document.addEventListener("keydown", (e) => {
   const mod = e.metaKey || e.ctrlKey;
+  if(mod && e.key.toLowerCase() === "s"){
+    e.preventDefault();
+    saveDraftFile().catch(() => setStatus("Could not save file"));
+    return;
+  }
   if(mod && e.key.toLowerCase() === "z"){
     e.preventDefault();
     if(e.shiftKey) redo(); else undo();
