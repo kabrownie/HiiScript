@@ -166,6 +166,20 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Determine version and release notes
+        run: |
+          set -euo pipefail
+          VERSION="$(node -p "require('./package.json').version")"
+          RELEASE_NOTES="docs/releases/${VERSION}.md"
+          if [ ! -f "$RELEASE_NOTES" ]; then
+            echo "::error::Release notes file not found: $RELEASE_NOTES"
+            exit 1
+          fi
+          echo "VERSION=v${VERSION}" >> "$GITHUB_ENV"
+          echo "RELEASE_NOTES=${RELEASE_NOTES}" >> "$GITHUB_ENV"
       - uses: actions/download-artifact@v4
         with:
           path: release
@@ -187,7 +201,7 @@ jobs:
       - uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
-          body_path: docs/releases/1.0.11.md
+          body_path: ${{ env.RELEASE_NOTES }}
           files: publish/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

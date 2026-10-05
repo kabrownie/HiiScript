@@ -14,8 +14,8 @@ Support continued development: [Sponsor Hiiscript on GitHub](https://github.com/
 
 **Release page:** [GitHub Releases](https://github.com/kabrownie/Hiiscript/releases/latest)
 
-## Release 1.0.11
-The 1.0.11  the latest production packaging pass for desktop and Android builds. It targets the same offline screenplay workflow, with the release pipeline configured for Linux, Windows, and Android artifact generation.
+## Latest release
+The latest production release targets the offline screenplay workflow, with the release pipeline configured for Linux, Windows, and Android artifact generation.
 
 ## Privacy
 
@@ -98,8 +98,8 @@ npm run build:linux
 
 Builds are written to `dist/`:
 
-- `hiiscript-1.0.11-x86_64.AppImage` runs without installation.
-- `hiiscript-1.0.11-amd64.deb` installs with `sudo dpkg -i`.
+- The versioned AppImage runs without installation.
+- The versioned DEB installs with `sudo dpkg -i`.
 
 ### Build Windows packages
 
@@ -172,7 +172,7 @@ system has working drivers, set `HIISCRIPT_FORCE_GPU=1` before launching to
 enable hardware acceleration:
 
 ```bash
-HIISCRIPT_FORCE_GPU=1 ./hiiscript-1.0.11-x86_64.AppImage
+HIISCRIPT_FORCE_GPU=1 ./hiiscript-VERSION-x86_64.AppImage
 
 HIISCRIPT_DISABLE_GPU=1 Hiiscript.exe
 ```
